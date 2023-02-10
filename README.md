@@ -2,7 +2,7 @@
 
 <div align="center">
 
-## My dotfiles Windows 
+## My dotfiles Linux 
 
 </div>
 
