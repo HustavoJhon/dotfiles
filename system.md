@@ -57,3 +57,8 @@ or
 **Use interactive mode**
 
 `trans -shell en:es thanks`
+
+### Mecanografia
+
+`sudo apt install TTYPER`or
+`tt` or `GNU typist`
