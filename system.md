@@ -18,7 +18,9 @@
 **Otros monitores de recursos**
 
 1. Glances
-2. Bashtop
+2. Bpytop
+`sudo apt-get install bpytop`
+3. Bashtop
   ```bash
   git clone https://github.com/aristocratos/bashtop.git
   cd bashtop
