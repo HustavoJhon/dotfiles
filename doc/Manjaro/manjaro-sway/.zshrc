@@ -23,10 +23,11 @@ alias lla='ls -la'
 # alias lt='ls --tree'
 
 # EXA
+alias ls='exa--icons'
 alias ls='exa -D --group-directories-first --icons' # Solo Folder
 alias la='exa -a --group-directories-first --icons' # Nuevo ls con opciones preferidas
 alias ll='exa -l --header --group-directories-first --icons --no-user --no-time' # Formato Largo
-alias lt='exa -aT --group-directories-first --icons' #Mostra dentro dolder
+alias lt='exa -aT --group-directories-first --git-ignore --icons' #Mostra dentro dolder
 alias l.='exa -a | egrep "^\."' # Solo ocultos 
 alias li='exa --git-ignore --group-directories-first --icons' # Ignora archivos de .gitignore
 alias lg='exa -al --header --git --group-directories-first --icons --no-user --no-time' # Formato largp mas git data
