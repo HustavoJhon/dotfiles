@@ -1,8 +1,21 @@
-alias cls="clear"
-alias tree="exa --icons --tree -L 1 -I node_modules"
-alias ls="exa --icons"
-alias dir="exa --icons -lh"
-alias grep="grep --color"
-alias cat="bat"
-alias diff="icdiff"
-alias gitlog="git log --graph --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
+# BASIC ALIASES
+alias cls='clear'
+
+# FOR PROGRAMINT
+alias grep='grep --color'
+alias python='python3'
+alias py='python3'
+alias diff='icdiff'
+alias gitlog='git log --graph --pretty='%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all'
+
+# ALIASES FOR EXA
+alias ls='exa--icons'
+alias ls='exa -D --group-directories-first --icons' #Solo Folder
+alias la='exa -a --group-directories-first --icons'
+alias ll='exa -l --header --group-directories-first --icons --no-user --no-time'
+alias lt='exa -aT --group-directories-first --git-ignore --icons'
+alias l.='exa -a | egrep "^\."' #solo ocultos
+alias li='exa --git-ignore --group-directories-first --icons' # mostrat archivos ignorados por .gitignore
+alias lg='exa -al --header --git --group-directories-first --icons --no-user --no-time'
+alias lp='exa -al --header --octal-permissions --group-directories-first --icons --no-user --no-time' # Formato largo mas permisos
+alias tree='exa --icons --tree -L 1 -I node_modules'

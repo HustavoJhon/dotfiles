@@ -11,6 +11,7 @@ zgen load zsh-users/zsh-autosuggestions
 zgen load zsh-users/zsh-completions
 
 source ~/.dotfiles/.aliases
+source ~/.powerlevel10k/powerlevel10k.zsh-theme
 
 export PAGER="less"
 
