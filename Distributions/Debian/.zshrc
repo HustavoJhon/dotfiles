@@ -39,5 +39,6 @@ export PATH=$HOME/bin:/usr/games:/usr/local/bin:$HOME/.nvm:/usr/local/go/bin:$DE
 echo "$(cat $HOME/.dotfiles/banner)" | lolcat
 
 # banner
+clear
 cat ~/banner.txt
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off # delet message intro zsh
