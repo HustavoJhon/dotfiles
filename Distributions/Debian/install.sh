@@ -13,7 +13,7 @@ sudo apt-get install -y \
     bash zsh sudo wget git \
     vim neovim \
     curl neofetch \
-    htop \
+    htop ranger\
     unzip zip \
     bat exa \
     sl lolcat cmatrix

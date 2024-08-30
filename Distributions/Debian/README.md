@@ -32,3 +32,10 @@ sudo apt update
 sudo apt install python3
 sudo apt install python3.11-venv
 ```
+
+**Warp**
+
+> eliminar mensaje de introduccion
+```zsh
+sudo rm /etc/motd
+```
