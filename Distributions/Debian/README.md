@@ -42,3 +42,12 @@ sudo rm /etc/motd
 
 **ASCII**
 [shadown](https://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=Type%20Something%20)
+
+**Programs**
+
+```bash
+sudo apt update
+sudo apt install snapd
+
+sudo snap install obsidian --classic
+```
