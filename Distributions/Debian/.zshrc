@@ -40,5 +40,5 @@ echo "$(cat $HOME/.dotfiles/banner)" | lolcat
 
 # banner
 clear
-cat ~/banner.txt
+cat ~/banner.txt | lolcat
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off # delet message intro zsh
