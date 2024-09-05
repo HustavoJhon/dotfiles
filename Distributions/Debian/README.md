@@ -51,3 +51,11 @@ sudo apt install snapd
 
 sudo snap install obsidian --classic
 ```
+
+```bash
+sudo apt install cmus
+
+mkdir -p ~/.cmus
+wget https://raw.githubusercontent.com/egel/cmus-gruvbox/master/gruvbox-dark.theme
+# Then open Cmus and set new theme :colorscheme gruvbox-dark.
+```
