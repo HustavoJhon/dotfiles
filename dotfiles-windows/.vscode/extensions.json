@@ -1,0 +1,77 @@
+[
+	{
+        "identifier": {
+            "id": "pkief.material-icon-theme",
+            "uuid": "5db78037-f674-459f-a236-db622c427c5b"
+        },
+        "version": "4.34.0",
+        "location": {
+            "$mid": 1,
+            "path": "/c:/Users/husta/.vscode/extensions/pkief.material-icon-theme-4.34.0",
+            "scheme": "file"
+        },
+        "relativeLocation": "pkief.material-icon-theme-4.34.0",
+        "metadata": {
+            "id": "5db78037-f674-459f-a236-db622c427c5b",
+            "publisherId": "f9e5bc2f-fea1-4075-917f-d83e01e69f56",
+            "publisherDisplayName": "Philipp Kief",
+            "targetPlatform": "undefined",
+            "updated": false,
+            "isPreReleaseVersion": false,
+            "hasPreReleaseVersion": false,
+            "installedTimestamp": 1710734963654,
+            "pinned": false
+        }
+    },
+	{
+        "identifier": {
+            "id": "formulahendry.terminal",
+            "uuid": "186ace18-2b44-490d-863e-0bd29b229a27"
+        },
+        "version": "0.0.10",
+        "location": {
+            "$mid": 1,
+            "path": "/c:/Users/husta/.vscode/extensions/formulahendry.terminal-0.0.10",
+            "scheme": "file"
+        },
+        "relativeLocation": "formulahendry.terminal-0.0.10",
+        "metadata": {
+            "id": "186ace18-2b44-490d-863e-0bd29b229a27",
+            "publisherId": "38bbe3f0-5204-4170-845e-c2f966d979b8",
+            "publisherDisplayName": "Jun Han",
+            "targetPlatform": "undefined",
+            "updated": false,
+            "isPreReleaseVersion": false,
+            "hasPreReleaseVersion": false,
+            "installedTimestamp": 1710735512648,
+            "pinned": false
+        }
+    },
+	{
+        "identifier": {
+            "id": "vscodevim.vim",
+            "uuid": "d96e79c6-8b25-4be3-8545-0e0ecefcae03"
+        },
+        "version": "1.27.2",
+        "location": {
+            "$mid": 1,
+            "fsPath": "c:\\Users\\husta\\.vscode\\extensions\\vscodevim.vim-1.27.2",
+            "_sep": 1,
+            "external": "file:///c%3A/Users/husta/.vscode/extensions/vscodevim.vim-1.27.2",
+            "path": "/c:/Users/husta/.vscode/extensions/vscodevim.vim-1.27.2",
+            "scheme": "file"
+        },
+        "relativeLocation": "vscodevim.vim-1.27.2",
+        "metadata": {
+            "id": "d96e79c6-8b25-4be3-8545-0e0ecefcae03",
+            "publisherId": "5d63889b-1b67-4b1f-8350-4f1dce041a26",
+            "publisherDisplayName": "vscodevim",
+            "targetPlatform": "undefined",
+            "updated": false,
+            "isPreReleaseVersion": false,
+            "hasPreReleaseVersion": false,
+            "installedTimestamp": 1711300671661,
+            "pinned": false
+        }
+    }
+]

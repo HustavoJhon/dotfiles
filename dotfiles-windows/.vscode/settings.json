@@ -1,0 +1,9 @@
+{
+    "workbench.colorTheme": "Codely Dark",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.activityBar.location": "hidden",
+    "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.fontFamily": "FiraCode Nerd Font",
+    "workbench.startupEditor": "none",
+    "editor.fontFamily": "Dank Mono"
+}
