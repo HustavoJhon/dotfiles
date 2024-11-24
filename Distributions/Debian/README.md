@@ -64,3 +64,24 @@ mkdir -p ~/.cmus
 wget https://raw.githubusercontent.com/egel/cmus-gruvbox/master/gruvbox-dark.theme
 # Then open Cmus and set new theme :colorscheme gruvbox-dark.
 ```
+
+**RSA SSH keys**
+
+```bash
+ssh-keygen -t rsa -b 2048 -C "user@email"
+```
+
+configure SSH to point a different directory
+
+config file
+```bash
+# Github.com
+Host github.com
+    HostName github.com
+    IdentifyFile ~/.ssh/id_rsa_github
+
+# Azure.com
+Host ssh.dev.azure.com
+    HostName ssh.dev.azure.com
+    IdentifyFile ~/.ssh/id_rsa_azure
+```
