@@ -85,3 +85,5 @@ Host ssh.dev.azure.com
     HostName ssh.dev.azure.com
     IdentifyFile ~/.ssh/id_rsa_azure
 ```
+
+[dotnet](https://learn.microsoft.com/en-us/dotnet/core/install/linux-debian?tabs=dotnet9)
