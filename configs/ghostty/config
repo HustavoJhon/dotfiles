@@ -1,0 +1,21 @@
+# PACMAN.DOTS - Ghostty Configuration
+
+font-family = Hack Nerd Font
+font-size = 14
+
+theme = catppuccin-mocha
+
+background-opacity = 0.85
+window-decoration = auto
+macos-titlebar-style = tabs
+
+cursor-style = bar
+cursor-style-blink = true
+
+shell-integration = zsh
+
+copy-on-select = clipboard
+
+confirm-close-surface = false
+
+mouse-hide-while-typing = true
