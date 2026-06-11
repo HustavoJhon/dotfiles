@@ -1,0 +1,86 @@
+# PACMAN.DOTS - Starship Prompt Configuration
+
+format = """
+[](#7C3AED)\
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$fill\
+$python\
+$node\
+$rust\
+$golang\
+$cmd_duration\
+[](#7C3AED)\n\
+$character"""
+
+right_format = "$time"
+
+[os]
+disabled = false
+style = "bg:#7C3AED fg:#FFFFFF"
+format = "[ $symbol]($style)"
+
+[os.symbols]
+linux = " "
+macos = " "
+windows = " "
+
+[username]
+show_always = false
+style_user = "bg:#06B6D4 fg:#0F0F0F"
+style_root = "bg:#EF4444 fg:#FFFFFF"
+format = "[ $user ]($style)"
+
+[hostname]
+ssh_only = true
+style = "bg:#06B6D4 fg:#0F0F0F"
+format = "@[$hostname ]($style)"
+
+[directory]
+style = "bg:#1a1b26 fg:#a9b1d6"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[git_branch]
+style = "bg:#7C3AED fg:#FFFFFF"
+format = "[ $symbol$branch ]($style)"
+
+[git_status]
+style = "bg:#7C3AED fg:#06B6D4"
+format = '[$all_status$ahead_behind]($style)'
+
+[nodejs]
+style = "bg:#73daca fg:#0F0F0F"
+format = "[ via $symbol$version ]($style)"
+
+[python]
+style = "bg:#e0af68 fg:#0F0F0F"
+format = "[ $symbol$version ]($style)"
+
+[rust]
+style = "bg:#f7768e fg:#0F0F0F"
+format = "[ $symbol$version ]($style)"
+
+[golang]
+style = "bg:#7aa2f7 fg:#0F0F0F"
+format = "[ $symbol$version ]($style)"
+
+[cmd_duration]
+style = "bg:#6B7280 fg:#FFFFFF"
+format = "[ ⏱ $duration ]($style)"
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "bg:#1a1b26 fg:#6B7280"
+format = "[ $time ]($style)"
+
+[character]
+success_symbol = "[❯](bold #7C3AED)"
+error_symbol = "[❯](bold #EF4444)"
+vimcmd_symbol = "[❮](bold #06B6D4)"

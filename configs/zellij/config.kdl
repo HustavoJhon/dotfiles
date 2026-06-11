@@ -1,0 +1,54 @@
+// PACMAN.DOTS - Zellij Configuration
+keybinds {
+    unbind "Ctrl"
+    unbind "Alt"
+    unbind "Ctrl Shift"
+
+    bind "Ctrl f" { SwitchToMode "Locked"; }
+    bind "Ctrl p" { SwitchToMode "Normal"; }
+    bind "Ctrl n" { NewPane; SwitchToMode "Normal"; }
+    bind "Ctrl t" { NewTab; SwitchToMode "Normal"; }
+    bind "Ctrl w" { CloseFocus; SwitchToMode "Normal"; }
+    bind "Ctrl s" { SwitchToMode "Scroll"; }
+    bind "Ctrl q" { Quit; }
+
+    bind "Ctrl h" { MoveFocus "Left"; }
+    bind "Ctrl l" { MoveFocus "Right"; }
+    bind "Ctrl k" { MoveFocus "Up"; }
+    bind "Ctrl j" { MoveFocus "Down"; }
+
+    bind "Alt h" { Resize "Left"; }
+    bind "Alt l" { Resize "Right"; }
+    bind "Alt k" { Resize "Up"; }
+    bind "Alt j" { Resize "Down"; }
+
+    bind "Ctrl b" { SwitchToMode "Session"; }
+
+    shared_except "locked" {
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+    }
+
+    normal {
+        bind "Esc" { SwitchToMode "Normal"; }
+    }
+}
+
+theme "catppuccin-mocha"
+
+pane_frames {
+    rounded_corners true
+    hide_frame_for_single_pane true
+}
+
+plugins {
+    tab-bar { path "tab-bar"; }
+    status-bar { path "status-bar"; }
+    strider { path "strider"; }
+}
+
+default_shell "zsh"
+
+simplified_ui true
+scrollback_editor "nvim"
+mouse_mode true
+copy_command "xclip -selection clipboard"
