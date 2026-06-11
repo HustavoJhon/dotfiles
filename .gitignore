@@ -1,21 +1,35 @@
-# Build and Release Folders
+# Build
+bin/
 bin-debug/
 bin-release/
-[Oo]bj/
 [Bb]in/
+[Oo]bj/
 
-# Other files and folders
-.settings/
+# Go
+*.out
+*.test
+*.test.exe
+vendor/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
-
-# Obsidian APP
+# Editor
 .obsidian
+.settings/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+/tmp/
+*.log
