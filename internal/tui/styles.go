@@ -29,11 +29,13 @@ var (
 
 	GhostStyle = lipgloss.NewStyle().
 			Foreground(GhostRed).
-			Bold(true)
+			Bold(true).
+			Align(lipgloss.Center)
 
 	BannerStyle = lipgloss.NewStyle().
 			Foreground(Red).
-			Bold(true)
+			Bold(true).
+			Align(lipgloss.Center)
 
 	SelectedStyle = lipgloss.NewStyle().
 			Foreground(Yellow).
