@@ -39,7 +39,7 @@ alias ~='cd ~'
 #                BASIC ALIASES
 # ---------------------------------------------
 alias cls='clear'
-alias c='clear'
+alias c='clear && tmux clear-history'
 alias grep='grep --color'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -65,8 +65,12 @@ alias gd='git diff'
 alias gb='git branch'
 alias gco='git checkout'
 alias gcb='git checkout -b'
+alias gl='git log --oneline'
 alias glog='git log --oneline --decorate --graph'
 alias gitlog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all"
+alias gA='git add -A && git status'
+alias grh='git reset --hard'
+alias gR='git reset -q && git status'
 
 # ---------------------------------------------
 #              UTILITY ALIASES
@@ -84,6 +88,9 @@ alias edit-aliases='nvim ~/.dotfiles/zsh/aliases.zsh'
 alias ports='netstat -tulanp'
 alias myip='curl ifconfig.me'
 alias localip='ipconfig getifaddr en0'
+alias wifi='nmcli d wifi list'
+alias vimrc='nvim ~/.config/nvim/init.lua'
+alias tmuxrc='nvim ~/.tmux.conf && tmux source-file ~/.tmux.conf'
 
 # ---------------------------------------------
 #           FILE OPERATIONS ALIASES

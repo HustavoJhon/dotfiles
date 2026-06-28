@@ -1,7 +1,7 @@
 #!/bin/bash
-# PACMAN.DOTS - System Cleanup
+# PACMAN - System Cleanup
 
-echo "PACMAN.DOTS Cleanup"
+echo "PACMAN Cleanup"
 
 clean_pacman() {
     echo "→ Cleaning pacman cache..."

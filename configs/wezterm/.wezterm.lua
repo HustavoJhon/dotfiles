@@ -1,4 +1,4 @@
--- PACMAN.DOTS - WezTerm Configuration
+-- PACMAN - WezTerm Configuration
 
 local wezterm = require 'wezterm'
 local config = wezterm.config_builder()

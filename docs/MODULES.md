@@ -1,4 +1,4 @@
-# PACMAN.DOTS Modules
+# PACMAN Modules
 
 ## Available Components
 

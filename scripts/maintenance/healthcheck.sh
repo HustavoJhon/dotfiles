@@ -1,7 +1,7 @@
 #!/bin/bash
-# PACMAN.DOTS - System Health Check
+# PACMAN - System Health Check
 
-echo "PACMAN.DOTS Health Check"
+echo "PACMAN Health Check"
 echo "======================="
 
 echo -n "OS: "

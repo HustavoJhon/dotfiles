@@ -1,0 +1,13 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+    }
+    tab name=" dev"
+    tab name=" fix"
+    tab name=" run"
+    tab name=" ia"
+    tab name=" ssh"
+}

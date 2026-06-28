@@ -1,4 +1,4 @@
-# PACMAN.DOTS - Makefile
+# PACMAN - Makefile
 
 BINARY=bin/installer
 GOFLAGS=-ldflags="-s -w"
@@ -44,7 +44,7 @@ test:
 	@echo "✓ Tests complete"
 
 help:
-	@echo "PACMAN.DOTS Commands:"
+	@echo "PACMAN Commands:"
 	@echo "  make build    - Build Go TUI installer"
 	@echo "  make install  - Run the TUI installer"
 	@echo "  make run      - Build and run"

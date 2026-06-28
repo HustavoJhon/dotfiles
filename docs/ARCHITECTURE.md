@@ -1,8 +1,8 @@
-# PACMAN.DOTS Architecture
+# PACMAN Architecture
 
 ## Overview
 
-PACMAN.DOTS is a modern dotfiles management platform built with:
+PACMAN is a modern dotfiles management platform built with:
 
 - **Go** — TUI installer with Bubble Tea
 - **ZSH** — Modular shell configuration

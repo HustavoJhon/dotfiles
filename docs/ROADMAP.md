@@ -1,4 +1,4 @@
-# PACMAN.DOTS Roadmap
+# PACMAN Roadmap
 
 ## v1.0 (Current)
 - [x] Go TUI installer with Bubble Tea

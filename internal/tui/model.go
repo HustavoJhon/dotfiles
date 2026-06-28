@@ -228,7 +228,7 @@ func (m Model) View() string {
 func (m Model) welcomeView() string {
 	s := BannerStyle.Render(logoAscii()) + "\n\n"
 	s += GhostStyle.Render(pacmanGhostArt()) + "\n\n"
-	s += TitleStyle.Align(lipgloss.Center).Render("PACMAN.DOTS INSTALLER v1.0") + "\n\n"
+	s += TitleStyle.Align(lipgloss.Center).Render("PACMAN INSTALLER v1.0") + "\n\n"
 	s += DimStyle.Align(lipgloss.Center).Render("Press ENTER to start  ·  Press q to quit")
 	return s
 }

@@ -29,11 +29,11 @@ func main() {
 			return
 
 		case "--version", "-v":
-			fmt.Println("PACMAN.DOTS Installer v1.0")
+			fmt.Println("PACMAN Installer v1.0")
 			return
 
 		case "--help", "-h":
-			fmt.Println("PACMAN.DOTS Installer")
+			fmt.Println("PACMAN Installer")
 			fmt.Println("  Interactive TUI installer for dotfiles")
 			fmt.Println("")
 			fmt.Println("Flags:")

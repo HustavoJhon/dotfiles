@@ -1,10 +1,10 @@
 #!/bin/bash
-# PACMAN.DOTS - Post-Installation Script
+# PACMAN - Post-Installation Script
 # Run after the TUI installer to finalize setup
 
 set -e
 
-echo "PACMAN.DOTS Post-Install"
+echo "PACMAN Post-Install"
 
 # Change shell to ZSH if not already
 if [ "$SHELL" != "$(which zsh)" ]; then

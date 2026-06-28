@@ -1,5 +1,5 @@
 #!/bin/bash
-# PACMAN.DOTS - Bootstrap Installer
+# PACMAN - Bootstrap Installer
 # Installs Go (if missing) and runs the TUI installer
 
 set -e
@@ -10,7 +10,7 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 echo -e "${PURPLE}${BOLD}"
-echo "  PACMAN.DOTS"
+echo "  PACMAN"
 echo "  Bootstrap Installer"
 echo -e "${NC}"
 

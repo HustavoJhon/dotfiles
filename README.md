@@ -1,13 +1,7 @@
 <div align="center">
-  <img src="assets/logo/ghost.png" alt="PACMAN.DOTS" width="120" height="120">
-  <h1>PACMAN.DOTS</h1>
-  <p>Modern dotfiles management platform with Go TUI installer</p>
-  <p>
-    <a href="#installation">Installation</a> •
-    <a href="#modules">Modules</a> •
-    <a href="#architecture">Architecture</a> •
-    <a href="docs/ROADMAP.md">Roadmap</a>
-  </p>
+  <img src="assets/logo/ghost.png" alt="PACMAN" width="100" height="100">
+  <h1>PACMAN</h1>
+  <p>dotfiles con instalador TUI</p>
   <p>
     <img src="https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat&logo=go" alt="Go">
     <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black" alt="Linux">
@@ -15,101 +9,35 @@
   </p>
 </div>
 
----
-
-## Installation
-
-**One-liner:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/hustavojhon/dotfiles/main/install.sh | bash
 ```
 
-**Manual:**
-```bash
-git clone https://github.com/hustavojhon/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-make install
-```
+## Módulos
 
-**Backup only:**
-```bash
-make backup
-```
-
-## Modules
-
-| Module | Status | Description |
+| Módulo | Estado | Descripción |
 |---|---|---|
-| ZSH | ✓ | Modular shell with plugins, fzf, zoxide |
-| Zellij | ✓ | Terminal multiplexer with custom layouts |
-| Kitty | ✓ | GPU terminal with Tokyo Night theme |
-| WezTerm | ✓ | Lua-configured GPU terminal |
-| Ghostty | ✓ | Native GPU terminal |
-| Fastfetch | ✓ | System info (neofetch replacement) |
-| Starship | ✓ | Cross-shell prompt |
-| Hyprland | ✓ | Dynamic tiling Wayland compositor |
+| ZSH | ✓ | Modular shell con plugins, fzf, zoxide |
+| Zellij | ✓ | Terminal multiplexer |
+| Kitty | ✓ | GPU terminal |
+| WezTerm | ✓ | Terminal Lua-configurable |
+| Ghostty | ✓ | Terminal nativa GPU |
+| Fastfetch | ✓ | System info |
+| Starship | ✓ | Prompt cross-shell |
+| Hyprland | ✓ | Wayland compositor |
 | Tmux | ✓ | Terminal multiplexer |
-| Neovim | 🔒 | UNTOUCHED — preserved as-is |
+| Neovim | 🔒 | Preservado intacto |
+| Windows | 📁 | Configs para Windows (PowerShell, nvim, VS Code) |
 
-**Legend:** ✓ Active · 🔒 Preserved · 🚧 In Progress
-
-## Architecture
-
-```
-cmd/installer/     Go TUI (Bubble Tea + Lip Gloss)
-internal/          Core logic (distro, backup, symlink)
-configs/           Dotfiles organized by tool
-scripts/           Shell + Python automation
-shaders/           Optional GLSL effects
-assets/            Logos, banners, wallpapers
-```
-
-See [ARCHITECTURE.md](docs/ARCHITECTURE.md) for full details.
-
-## Distro Support
-
-| Family | Distros | Package Manager |
-|---|---|---|
-| Arch | Arch, CachyOS, EndeavourOS | pacman + yay/paru |
-| Debian | Debian, Ubuntu, Pop, Mint, Kali | apt |
-| Fedora | Fedora, RHEL | dnf |
-
-Automatic detection via `/etc/os-release`.
-
-## Visual Identity
-
-- **Mascot:** Pacman Ghost
-- **Theme:** Purple + Cyan + Black
-- **Style:** Hacker minimalism
-- **Terminal Font:** Hack Nerd Font
-
-## Quick Start
+## Comandos
 
 ```bash
-# Clone and install
-git clone https://github.com/hustavojhon/dotfiles.git
-cd dotfiles
-make install
-
-# Or use make commands
-make build       # Build Go TUI installer
-make backup      # Create timestamped backup
-make update      # Pull latest + rebuild
-make clean       # Remove artifacts
+make install   # Instalar todo
+make backup    # Backup timestamp
+make update    # Pull + rebuild
+make build     # Build TUI
 ```
 
-## Tools Used
+## Licencia
 
-- [Bubble Tea](https://github.com/charmbracelet/bubbletea) — TUI framework
-- [Lip Gloss](https://github.com/charmbracelet/lipgloss) — Styling
-- [Bubbles](https://github.com/charmbracelet/bubbles) — UI components
-- [Oh My Zsh](https://ohmyz.sh) — ZSH framework
-- [Powerlevel10k](https://github.com/romkatv/powerlevel10k) — ZSH theme
-
-## License
-
-GNU GPL v3 — See [LICENSE](LICENSE)
-
-## Acknowledgments
-
-Inspired by [Gentleman.Dots](https://github.com/gentleman/dots) architectural patterns, but built with independent design and implementation.
+GNU GPL v3

@@ -1,4 +1,4 @@
-# PLAN DE REFACTORIZACIÓN — PACMAN.DOTS
+# PLAN DE REFACTORIZACIÓN — PACMAN
 
 ## RESUMEN EJECUTIVO
 
@@ -13,11 +13,11 @@ Transformar el repositorio actual de dotfiles (estructura plana con configuracio
 | Problema | Severidad | Archivos Afectados |
 |---|---|---|
 | **5 archivos .zshrc diferentes** sin coordinación | Alta | `/`, `Debian/`, `Manjaro/`, `Ubuntu/` (documentación), Windows |
-| **Duplicación de Neovim settings.lua** (100% idéntico) | Alta | `Debian/nvim/`, `dotfiles-windows/nvim/` |
+| **Duplicación de Neovim settings.lua** (100% idéntico) | Alta | `Debian/nvim/`, `windows/nvim/` |
 | **Script `_setup.sh` references `_install.sh` inexistente** | Alta | `_setup.sh` |
 | **Usuario `sarah` hardcodeado en `_setup.sh`** | Alta | `_setup.sh:29` |
 | **Typo `exa--icons` (falta espacio) duplicado** | Media | `Debian/.aliases`, `Manjaro/.zshrc` |
-| **Typo path Windows `C:ProgramData...`** | Media | `dotfiles-windows/.config/user_profile.ps1` |
+| **Typo path Windows `C:ProgramData...`** | Media | `windows/.config/user_profile.ps1` |
 | **`.bashrc` referencia `~.bash_aliases` (sin `/`)** | Baja | `.bashrc` |
 | **Sin gestor de dotfiles (ni Stow, chezmoi, yadm)** | Alta | Estructural |
 | **Sin sistema de backup** | Alta | Estructural |
@@ -25,7 +25,7 @@ Transformar el repositorio actual de dotfiles (estructura plana con configuracio
 | **Kitty config mínima, Tokyo Night activo, Nord inactivo** | Baja | `kitty/` |
 | **Sin configuraciones Zellij, Wezterm, Ghostty, Starship, Fastfetch, Hyprland** | Media | README los menciona pero no existen |
 | **Sin Makefile, sin Go, sin Python** | Alta | Estructural |
-| **2 archivos keymaps.lua vacíos** | Baja | `Debian/`, `dotfiles-windows/` |
+| **2 archivos keymaps.lua vacíos** | Baja | `Debian/`, `windows/` |
 | **README desactualizado (template genérico)** | Media | `README.md` |
 
 ### 1.2 Activos a Preservar
@@ -41,7 +41,7 @@ Transformar el repositorio actual de dotfiles (estructura plana con configuracio
 | **Ghost logo** (ghost.png) | Medio — branding | `assets/logo/` |
 | **Wallpapers** | Medio | `assets/wallpapers/` |
 | **Neovim config** (Debian) | Alto — NO TOCAR | `configs/nvim/` (preservado intacto) |
-| **Windows configs** | Bajo — plataforma separada | `dotfiles-windows/` (igual, intacto) |
+| **Windows configs** | Bajo — plataforma separada | `windows/` (igual, intacto) |
 | **Fonts FiraCode** | Bajo | `assets/fonts/` |
 
 ---
@@ -175,7 +175,7 @@ dotfiles/
 │   ├── MODULES.md
 │   └── ROADMAP.md
 │
-├── dotfiles-windows/                 # ← INTACTO (sin cambios)
+├── windows/                 # ← INTACTO (sin cambios)
 │
 ├── go.mod
 ├── go.sum
@@ -201,7 +201,7 @@ dotfiles/
 
 | Archivo | Condición |
 |---|---|
-| `dotfiles-windows/` | 100% intacto |
+| `windows/` | 100% intacto |
 | `configs/nvim/` | 100% intacto (contenido copiado de `Debian/nvim/`) |
 | `LICENSE` | Intacto |
 
@@ -245,7 +245,7 @@ internal/assets/
 ```
 [Welcome Screen]
   ├── Mostrar PACMAN GHOST ASCII
-  ├── Mostrar "PACMAN.DOTS INSTALLER v1.0"
+  ├── Mostrar "PACMAN INSTALLER v1.0"
   └── Press Enter to continue
 
 [Distro Detection]

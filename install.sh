@@ -1,5 +1,5 @@
 #!/bin/bash
-# PACMAN.DOTS - Quick Install Script
+# PACMAN - Quick Install Script
 # One-liner: curl -fsSL https://dotfiles.example.com/install.sh | bash
 
 set -e
@@ -17,7 +17,7 @@ echo "██╔═══╝ ██╔══██║██║     ██║╚�
 echo "██║     ██║  ██║╚██████╗██║ ╚═╝ ██║██║  ██║██║ ╚████║"
 echo "╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝"
 echo -e "${NC}"
-echo -e "${BOLD}PACMAN.DOTS - Dotfiles Installer${NC}"
+echo -e "${BOLD}PACMAN - Dotfiles Installer${NC}"
 echo ""
 
 # Get dotfiles directory

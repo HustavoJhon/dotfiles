@@ -1,4 +1,4 @@
-// PACMAN.DOTS - Kitty background blur shader
+// PACMAN - Kitty background blur shader
 // Gaussian blur approximation for transparent backgrounds
 
 const vec3  sampleBrighten = vec3(0.4, 0.4, 0.4);

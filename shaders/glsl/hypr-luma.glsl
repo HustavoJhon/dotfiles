@@ -1,4 +1,4 @@
-// PACMAN.DOTS - Hyprland luminance effect shader
+// PACMAN - Hyprland luminance effect shader
 // Subtle luminance-based color enhancement
 
 uniform float time;
