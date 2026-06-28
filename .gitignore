@@ -9,6 +9,7 @@ bin-release/
 *.out
 *.test
 *.test.exe
+!Dockerfile.test
 vendor/
 
 # Python
@@ -29,6 +30,12 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# Build artifacts
+installer
+
+# E2E
+e2e/pacman-installer-*
 
 # Temp
 /tmp/
