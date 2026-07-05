@@ -30,7 +30,7 @@ var BackupPaths = []string{
 	".zshrc",
 	".zshenv",
 	".p10k.zsh",
-	".tmux.conf",
+	".config/tmux/tmux.conf",
 	".gitconfig",
 	".config/kitty",
 	".config/starship.toml",
