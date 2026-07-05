@@ -58,7 +58,7 @@ func findDotfilesDir() string {
 		if info, err := os.Stat(filepath.Join(abs, "cmd", "installer", "main.go")); err == nil && !info.IsDir() {
 			return abs
 		}
-		if info, err := os.Stat(filepath.Join(abs, "configs")); err == nil && info.IsDir() {
+		if info, err := os.Stat(filepath.Join(abs, "shell", ".zshrc")); err == nil && !info.IsDir() {
 			return abs
 		}
 	}
