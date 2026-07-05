@@ -32,7 +32,7 @@ df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 ")"}'
 
 echo ""
 echo "--- Symlinks ---"
-for f in "$HOME/.zshrc" "$HOME/.tmux.conf" "$HOME/.p10k.zsh"; do
+for f in "$HOME/.zshrc" "$HOME/.config/tmux/tmux.conf" "$HOME/.p10k.zsh"; do
     if [ -L "$f" ]; then
         echo "  ✓ $f -> $(readlink -f "$f")"
     elif [ -f "$f" ]; then
