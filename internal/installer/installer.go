@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hustavojhon/dotfiles/internal/backup"
 	"github.com/hustavojhon/dotfiles/internal/distro"
@@ -97,21 +98,21 @@ func (inst *Installer) InstallComponent(comp Component) error {
 	sm.DryRun = inst.DryRun
 	sm.Verbose = inst.Verbose
 
+	var compLinks []symlink.Link
+	prefix := comp.ConfigDir + "/"
 	for _, link := range symlink.Links {
-		if filepath.Base(link.Src) == comp.ConfigDir || containsPath(link.Src, comp.ConfigDir) {
-			src := filepath.Join(inst.DotfilesDir, link.Src)
-			dest := filepath.Join(inst.HomeDir, link.Dest)
-			_ = sm.CreateAll()
-			_ = src
-			_ = dest
+		if link.Src == comp.ConfigDir || strings.HasPrefix(link.Src, prefix) {
+			compLinks = append(compLinks, link)
 		}
 	}
 
-	return nil
-}
+	if len(compLinks) > 0 {
+		if err := sm.CreateLinks(compLinks); err != nil {
+			return fmt.Errorf("failed to create symlinks for %s: %w", comp.Name, err)
+		}
+	} else if inst.Verbose {
+		fmt.Printf("  - no symlinks found for %s\n", comp.Name)
+	}
 
-func containsPath(path, dir string) bool {
-	absPath, _ := filepath.Abs(path)
-	absDir, _ := filepath.Abs(dir)
-	return len(absPath) >= len(absDir) && absPath[:len(absDir)] == absDir
+	return nil
 }
