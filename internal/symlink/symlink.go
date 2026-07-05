@@ -27,26 +27,31 @@ type Link struct {
 }
 
 var Links = []Link{
-	{Src: "configs/zsh/.zshrc", Dest: ".zshrc", Desc: "ZSH configuration"},
-	{Src: "configs/zsh/aliases.zsh", Dest: ".dotfiles/zsh/aliases.zsh", Desc: "ZSH aliases"},
-	{Src: "configs/zsh/exports.zsh", Dest: ".dotfiles/zsh/exports.zsh", Desc: "ZSH exports"},
-	{Src: "configs/zsh/functions.zsh", Dest: ".dotfiles/zsh/functions.zsh", Desc: "ZSH functions"},
-	{Src: "configs/zsh/paths.zsh", Dest: ".dotfiles/zsh/paths.zsh", Desc: "ZSH paths"},
-	{Src: "configs/zsh/p10k.zsh", Dest: ".p10k.zsh", Desc: "Powerlevel10k theme"},
-	{Src: "configs/kitty", Dest: ".config/kitty", Desc: "Kitty terminal"},
+	{Src: "shell/.zshrc", Dest: ".zshrc", Desc: "ZSH configuration"},
+	{Src: "shell/aliases.zsh", Dest: ".dotfiles/zsh/aliases.zsh", Desc: "ZSH aliases"},
+	{Src: "shell/exports.zsh", Dest: ".dotfiles/zsh/exports.zsh", Desc: "ZSH exports"},
+	{Src: "shell/functions.zsh", Dest: ".dotfiles/zsh/functions.zsh", Desc: "ZSH functions"},
+	{Src: "shell/paths.zsh", Dest: ".dotfiles/zsh/paths.zsh", Desc: "ZSH paths"},
+	{Src: "shell/p10k.zsh", Dest: ".p10k.zsh", Desc: "Powerlevel10k theme"},
+	{Src: "term/kitty", Dest: ".config/kitty", Desc: "Kitty terminal"},
 	{Src: "wm/tmux/.tmux.conf", Dest: ".config/tmux/tmux.conf", Desc: "Tmux configuration"},
-	{Src: "configs/zellij", Dest: ".config/zellij", Desc: "Zellij multiplexer"},
-	{Src: "configs/starship/starship.toml", Dest: ".config/starship.toml", Desc: "Starship prompt"},
-	{Src: "configs/fastfetch", Dest: ".config/fastfetch", Desc: "Fastfetch"},
-	{Src: "configs/wezterm/.wezterm.lua", Dest: ".wezterm.lua", Desc: "WezTerm config"},
-	{Src: "configs/ghostty/config", Dest: ".config/ghostty/config", Desc: "Ghostty config"},
-	{Src: "configs/hypr", Dest: ".config/hypr", Desc: "Hyprland config"},
+	{Src: "wm/zellij", Dest: ".config/zellij", Desc: "Zellij multiplexer"},
+	{Src: "prompt/starship.toml", Dest: ".config/starship.toml", Desc: "Starship prompt"},
+	{Src: "term/fastfetch", Dest: ".config/fastfetch", Desc: "Fastfetch"},
+	{Src: "term/wezterm/.wezterm.lua", Dest: ".wezterm.lua", Desc: "WezTerm config"},
+	{Src: "term/ghostty/config", Dest: ".config/ghostty/config", Desc: "Ghostty config"},
+	{Src: "wm/hypr", Dest: ".config/hypr", Desc: "Hyprland config"},
+	{Src: "editor/nvim", Dest: ".config/nvim", Desc: "Neovim config"},
 	{Src: "assets/banners/banner.txt", Dest: ".dotfiles/banner.txt", Desc: "Startup banner"},
 }
 
 func (m *Manager) CreateAll() error {
+	return m.CreateLinks(Links)
+}
+
+func (m *Manager) CreateLinks(links []Link) error {
 	var count int
-	for _, link := range Links {
+	for _, link := range links {
 		src := filepath.Join(m.DotfilesDir, link.Src)
 		dest := filepath.Join(m.HomeDir, link.Dest)
 
