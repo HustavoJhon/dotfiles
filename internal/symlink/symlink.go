@@ -34,7 +34,7 @@ var Links = []Link{
 	{Src: "configs/zsh/paths.zsh", Dest: ".dotfiles/zsh/paths.zsh", Desc: "ZSH paths"},
 	{Src: "configs/zsh/p10k.zsh", Dest: ".p10k.zsh", Desc: "Powerlevel10k theme"},
 	{Src: "configs/kitty", Dest: ".config/kitty", Desc: "Kitty terminal"},
-	{Src: "configs/tmux/.tmux.conf", Dest: ".tmux.conf", Desc: "Tmux configuration"},
+	{Src: "wm/tmux/.tmux.conf", Dest: ".config/tmux/tmux.conf", Desc: "Tmux configuration"},
 	{Src: "configs/zellij", Dest: ".config/zellij", Desc: "Zellij multiplexer"},
 	{Src: "configs/starship/starship.toml", Dest: ".config/starship.toml", Desc: "Starship prompt"},
 	{Src: "configs/fastfetch", Dest: ".config/fastfetch", Desc: "Fastfetch"},
