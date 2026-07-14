@@ -8,7 +8,6 @@ require('packer').startup(function(use)
 
     -- Plugins adicionales
     use 'beauwilliams/statusline.lua'            -- Statusline personalizado
-    use 'nvim-lualine/lualine.nvim'              -- Otra opción de statusline
     use 'nvim-tree/nvim-web-devicons'            -- Iconos para statusline, nvim-tree, etc.
     use 'nvim-tree/nvim-tree.lua'                -- Explorador de archivos
     use "lukas-reineke/indent-blankline.nvim"    -- Muestra líneas de indentación
