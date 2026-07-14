@@ -19,7 +19,7 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 WORKDIR /app
 COPY . .
 
-RUN go build -o /usr/local/bin/pacman-installer ./installer/cmd
+RUN go build -o /usr/local/bin/pacman-installer ./cmd/installer
 
 USER testuser
 WORKDIR /home/testuser

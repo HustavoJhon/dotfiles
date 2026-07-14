@@ -1,6 +1,7 @@
 package distro
 
 import (
+	"fmt"
 	"os/exec"
 )
 
@@ -24,6 +25,12 @@ func (d *DebianAdapter) InstallPackage(pkg string) error {
 }
 
 func (d *DebianAdapter) InstallPackages(pkgs []string) error {
+	updateCmd := exec.Command("sudo", "apt-get", "update", "-qq")
+	updateCmd.Stdout = nil
+	updateCmd.Stderr = nil
+	if err := updateCmd.Run(); err != nil {
+		return fmt.Errorf("apt-get update failed: %w", err)
+	}
 	args := append([]string{"apt-get", "install", "-y"}, pkgs...)
 	cmd := exec.Command("sudo", args...)
 	cmd.Stdout = nil

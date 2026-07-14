@@ -73,9 +73,9 @@ var Components = []Component{
 		ID:          "hyprland",
 		Name:        "Hyprland",
 		Description: "Dynamic tiling Wayland compositor",
-		Packages:    []string{"hyprland", "hyprlock", "hypridle", "waybar", "wofi", "dunst"},
+		Packages:    []string{"hyprland", "hyprlock", "hypridle", "hyprpaper", "waybar", "wofi", "dunst"},
 		ConfigDir:   "wm/hypr",
-		AURPackages: []string{"hyprland", "hyprlock", "hypridle"},
+		AURPackages: []string{"hyprland", "hyprlock", "hypridle", "hyprpaper"},
 		NeedsAUR:    true,
 	},
 	{
