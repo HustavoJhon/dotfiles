@@ -10,6 +10,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/hustavojhon/dotfiles/internal/installer"
+	"github.com/hustavojhon/dotfiles/internal/platform"
 )
 
 type Screen int
@@ -17,6 +18,7 @@ type Screen int
 const (
 	ScreenWelcome Screen = iota
 	ScreenDetect
+	ScreenProfile
 	ScreenMenu
 	ScreenBackup
 	ScreenInstall
@@ -33,32 +35,50 @@ type installErrMsg struct {
 }
 
 type Model struct {
-	Screen       Screen
-	Spinner      spinner.Model
-	Progress     progress.Model
-	Menu         MenuModel
-	Installer    *installer.Installer
-	Selected     []installer.Component
-	DistroName   string
-	InstallStep  int
-	InstallTotal int
-	InstallLog   []string
-	Width        int
-	Height       int
-	Ready        bool
-	Err          error
+	Screen         Screen
+	Spinner        spinner.Model
+	Progress       progress.Model
+	Menu           MenuModel
+	Installer      *installer.Installer
+	Selected       []installer.Component
+	DistroName     string
+	Platform       platform.PlatformInfo
+	ProfileCursor  int
+	InstallStep    int
+	InstallTotal   int
+	InstallLog     []string
+	Width          int
+	Height         int
+	Ready          bool
+	Err            error
 }
 
 func NewModel(inst *installer.Installer) Model {
 	s := spinner.New()
 	s.Style = lipgloss.NewStyle().Foreground(Aqua)
 
+	p := platform.Detect()
+
+	profileCursor := 1
+	switch p.Type {
+	case platform.PlatformOmarchy:
+		profileCursor = 0
+	case platform.PlatformLinux:
+		profileCursor = 1
+	case platform.PlatformMacOS:
+		profileCursor = 2
+	case platform.PlatformWSL:
+		profileCursor = 3
+	}
+
 	return Model{
-		Screen:    ScreenWelcome,
-		Spinner:   s,
-		Progress:  progress.New(progress.WithDefaultGradient()),
-		Installer: inst,
-		Menu:      NewMenuModel(installer.Components),
+		Screen:        ScreenWelcome,
+		Spinner:       s,
+		Progress:      progress.New(progress.WithDefaultGradient()),
+		Installer:     inst,
+		Menu:          NewMenuModel(installer.Components),
+		Platform:      p,
+		ProfileCursor: profileCursor,
 	}
 }
 
@@ -79,13 +99,30 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch m.Screen {
 		case ScreenWelcome:
 			if msg.String() == "enter" || msg.String() == " " {
-				m.Screen = ScreenDetect
 				info, _ := m.Installer.Distro.(interface{ Name() string })
 				m.DistroName = info.Name()
-				m.Screen = ScreenMenu
+				m.Screen = ScreenProfile
 				return m, nil
 			}
 			if msg.String() == "q" || msg.String() == "ctrl+c" {
+				return m, tea.Quit
+			}
+
+		case ScreenProfile:
+			switch msg.String() {
+			case "up", "k":
+				if m.ProfileCursor > 0 {
+					m.ProfileCursor--
+				}
+			case "down", "j":
+				if m.ProfileCursor < 3 {
+					m.ProfileCursor++
+				}
+			case "enter":
+				m.applyProfile()
+				m.Screen = ScreenMenu
+				return m, nil
+			case "q", "ctrl+c":
 				return m, tea.Quit
 			}
 
@@ -202,6 +239,8 @@ func (m Model) View() string {
 		content = m.welcomeView()
 	case ScreenDetect:
 		content = m.detectView()
+	case ScreenProfile:
+		content = m.profileView()
 	case ScreenMenu:
 		content = m.menuView()
 	case ScreenBackup:
@@ -236,14 +275,88 @@ func (m Model) welcomeView() string {
 func (m Model) detectView() string {
 	s := TitleStyle.Align(lipgloss.Center).Render("Detecting System") + "\n\n"
 	s += lipgloss.NewStyle().Align(lipgloss.Center).Render(
-		m.Spinner.View() + " Detecting Linux distribution...",
+		m.Spinner.View() + " Detecting environment...",
 	)
 	return s
 }
 
+func (m Model) profileView() string {
+	profiles := []struct {
+		name string
+		desc string
+	}{
+		{"Omarchy (Hyprland)", "Full Wayland desktop with tiling compositor"},
+		{"Linux", "Generic Linux with GUI terminal"},
+		{"macOS", "Apple macOS with Homebrew"},
+		{"WSL (Windows)", "Windows Subsystem for Linux (no GUI)"},
+	}
+
+	s := TitleStyle.Align(lipgloss.Center).Render("Select Profile") + "\n"
+	s += SubtitleStyle.Align(lipgloss.Center).Render("Detected: "+m.Platform.DisplayName) + "\n\n"
+	s += DimStyle.Render("  Choose a profile to pre-select components. You can customize after.") + "\n\n"
+
+	for i, p := range profiles {
+		cursor := "  "
+		if i == m.ProfileCursor {
+			cursor = "❯ "
+		}
+
+		line := cursor + p.name
+		if i == m.ProfileCursor {
+			lines := []string{SelectedStyle.Render(line), DimStyle.Render("   " + p.desc)}
+			s += strings.Join(lines, "\n") + "\n"
+		} else {
+			s += ItemStyle.Render(line) + "\n"
+		}
+	}
+
+	s += "\n" + DimStyle.Render("  ↑/↓ navigate  ·  Enter confirm  ·  q quit")
+	return s
+}
+
+func (m *Model) applyProfile() {
+	profileTypes := []platform.PlatformType{
+		platform.PlatformOmarchy,
+		platform.PlatformLinux,
+		platform.PlatformMacOS,
+		platform.PlatformWSL,
+	}
+
+	if m.ProfileCursor >= len(profileTypes) {
+		return
+	}
+
+	targetType := profileTypes[m.ProfileCursor]
+	targetPlatform := platform.PlatformInfo{Type: targetType}
+	defaults := platform.DefaultComponents(targetPlatform)
+
+	defaultSet := make(map[string]bool)
+	for _, id := range defaults {
+		defaultSet[id] = true
+	}
+
+	m.Menu.Platform = targetPlatform
+
+	for _, comp := range m.Menu.Components {
+		if platform.IsComponentCompatible(comp.ID, targetPlatform) {
+			m.Menu.Selected[comp.ID] = defaultSet[comp.ID]
+		} else {
+			m.Menu.Selected[comp.ID] = false
+		}
+	}
+}
+
 func (m Model) menuView() string {
+	profileNames := map[platform.PlatformType]string{
+		platform.PlatformOmarchy: "Omarchy (Hyprland)",
+		platform.PlatformLinux:   "Linux",
+		platform.PlatformMacOS:   "macOS",
+		platform.PlatformWSL:     "WSL (Windows)",
+	}
+	profileName := profileNames[m.Menu.Platform.Type]
+
 	s := TitleStyle.Align(lipgloss.Center).Render("Select Components") + "\n"
-	s += SubtitleStyle.Align(lipgloss.Center).Render("Distro: "+m.DistroName) + "\n\n"
+	s += SubtitleStyle.Align(lipgloss.Center).Render("Distro: "+m.DistroName+"  ·  Profile: "+profileName) + "\n\n"
 	s += m.Menu.View()
 	return s
 }

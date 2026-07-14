@@ -4,6 +4,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/hustavojhon/dotfiles/internal/installer"
+	"github.com/hustavojhon/dotfiles/internal/platform"
 )
 
 type MenuModel struct {
@@ -11,6 +12,7 @@ type MenuModel struct {
 	Selected   map[string]bool
 	Cursor     int
 	Done       bool
+	Platform   platform.PlatformInfo
 }
 
 func NewMenuModel(components []installer.Component) MenuModel {
@@ -21,6 +23,7 @@ func NewMenuModel(components []installer.Component) MenuModel {
 	return MenuModel{
 		Components: components,
 		Selected:   selected,
+		Platform:   platform.Detect(),
 	}
 }
 
@@ -39,8 +42,11 @@ func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.Cursor++
 			}
 		case " ":
-			id := m.Components[m.Cursor].ID
-			m.Selected[id] = !m.Selected[id]
+			comp := m.Components[m.Cursor]
+			if platform.IsComponentCompatible(comp.ID, m.Platform) {
+				id := comp.ID
+				m.Selected[id] = !m.Selected[id]
+			}
 		case "enter":
 			m.Done = true
 			return m, nil
@@ -70,6 +76,20 @@ func (m MenuModel) View() string {
 		cursor := "  "
 		if i == m.Cursor {
 			cursor = "❯ "
+		}
+
+		compatible := platform.IsComponentCompatible(comp.ID, m.Platform)
+
+		if !compatible {
+			reason := platform.IncompatibleReason(comp.ID, m.Platform)
+			line := cursor + "[✗] " + comp.Name + "  " + DimStyle.Render("(" + reason + ")")
+			if i == m.Cursor {
+				lines = append(lines, DimStyle.Render(line))
+				lines = append(lines, DimStyle.Render("   "+comp.Description))
+			} else {
+				lines = append(lines, DimStyle.Render("[✗] "+comp.Name+"  ("+reason+")"))
+			}
+			continue
 		}
 
 		checked := "[ ]"
