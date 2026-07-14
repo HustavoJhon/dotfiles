@@ -7,12 +7,11 @@
 #          WINDOW MANAGER AUTOSTART
 # ---------------------------------------------
 start_if_needed() {
-    WM_VAR="/$ZELLIJ"
-    WM_CMD="zellij"
-    
-    if [[ $- == *i* ]] && [[ -z "${WM_VAR#/}" ]] && [[ -t 1 ]]; then
-        exec $WM_CMD
-    fi
+    [[ -n "$DISABLE_ZELLIJ_AUTO" ]] && return
+    [[ $- != *i* ]] && return
+    [[ ! -t 1 ]] && return
+    [[ -z "$ZELLIJ" ]] || return
+    command -v zellij &>/dev/null && exec zellij
 }
 
 # ---------------------------------------------

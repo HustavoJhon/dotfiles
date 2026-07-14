@@ -45,7 +45,7 @@ export PNPM_HOME="$HOME/.local/share/pnpm"
 # ---------------------------------------------
 #              GO
 # ---------------------------------------------
-export GOPATH=/usr/share/go
+export GOPATH="$HOME/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # ---------------------------------------------
@@ -56,7 +56,6 @@ export PATH="$HOME/.config:$PATH"
 # ---------------------------------------------
 #              LOCAL LIB PATH
 # ---------------------------------------------
-export PATH="/usr/local/lib/*:$PATH"
 export PATH="/usr/local/bin:$PATH"
 
 # ---------------------------------------------

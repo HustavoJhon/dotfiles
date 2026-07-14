@@ -25,9 +25,12 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 plugins=(
-    command-not-found
     git
 )
+
+if [[ -f /usr/share/command-not-found/command-not-found ]]; then
+    plugins+=(command-not-found)
+fi
 
 source $ZSH/oh-my-zsh.sh
 
