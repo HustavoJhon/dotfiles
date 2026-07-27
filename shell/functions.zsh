@@ -186,7 +186,7 @@ proj() {
 projects() {
     local project_dir="${PROJECT_PATHS:-$HOME/work}"
     echo "📁 Projects in $project_dir:"
-    exa -1 "$project_dir" 2>/dev/null || ls -1 "$project_dir"
+    eza -1 "$project_dir" 2>/dev/null || ls -1 "$project_dir"
 }
 
 # ---------------------------------------------
