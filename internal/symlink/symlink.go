@@ -91,6 +91,9 @@ func (m *Manager) createLink(src, dest string) error {
 	if info, err := os.Lstat(dest); err == nil {
 		if info.Mode()&os.ModeSymlink != 0 {
 			existing, _ := os.Readlink(dest)
+			if !filepath.IsAbs(existing) {
+				existing = filepath.Join(filepath.Dir(dest), existing)
+			}
 			if existing == src {
 				return nil
 			}

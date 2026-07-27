@@ -1,4 +1,4 @@
-#!/bin/bash
+INSTALLER_BIN="${INSTALLER_BIN:-$INSTALLER_BIN}"
 # E2E tests for PACMAN installer
 
 set -e
@@ -18,7 +18,7 @@ log_fail() { printf "${RED}[FAIL]${NC} %s\n" "$1"; FAILED=$((FAILED + 1)); }
 
 test_help() {
     log_test "installer --help exits cleanly"
-    if /usr/local/bin/pacman-installer --help | head -5; then
+    if $INSTALLER_BIN --help | head -5; then
         log_pass "installer --help works"
     else
         log_fail "installer --help failed"
@@ -27,7 +27,7 @@ test_help() {
 
 test_version() {
     log_test "installer --version shows version"
-    output=$(/usr/local/bin/pacman-installer --version 2>&1)
+    output=$($INSTALLER_BIN --version 2>&1)
     if echo "$output" | grep -q "PACMAN"; then
         log_pass "installer --version shows PACMAN"
     else
@@ -37,7 +37,7 @@ test_version() {
 
 test_backup() {
     log_test "installer --backup-only runs without error"
-    output=$(/usr/local/bin/pacman-installer --backup-only 2>&1)
+    output=$($INSTALLER_BIN --backup-only 2>&1)
     if echo "$output" | grep -q "Backup"; then
         log_pass "backup completed"
     else

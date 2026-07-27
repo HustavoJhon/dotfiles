@@ -17,7 +17,7 @@ echo -e "${NC}"
 # Check Go
 if ! command -v go &> /dev/null; then
     echo -e "${CYAN}→ Installing Go...${NC}"
-    GOVERSION="1.22.2"
+    GOVERSION="1.26.3"
     wget -q "https://go.dev/dl/go${GOVERSION}.linux-amd64.tar.gz" -O /tmp/go.tar.gz
     sudo rm -rf /usr/local/go
     sudo tar -C /usr/local -xzf /tmp/go.tar.gz
