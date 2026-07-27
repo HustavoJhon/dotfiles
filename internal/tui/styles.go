@@ -5,9 +5,7 @@ import "github.com/charmbracelet/lipgloss"
 // Gruvbox palette
 var (
 	DarkBg  = lipgloss.Color("#282828")
-	Darker  = lipgloss.Color("#1d2021")
 	Light   = lipgloss.Color("#ebdbb2")
-	White   = lipgloss.Color("#fbf1c7")
 	Red     = lipgloss.Color("#fb4934")
 	Green   = lipgloss.Color("#b8bb26")
 	Yellow  = lipgloss.Color("#fabd2f")

@@ -99,8 +99,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch m.Screen {
 		case ScreenWelcome:
 			if msg.String() == "enter" || msg.String() == " " {
-				info, _ := m.Installer.Distro.(interface{ Name() string })
-				m.DistroName = info.Name()
+				info := m.Installer.Distro.Name()
+				m.DistroName = info
 				m.Screen = ScreenProfile
 				return m, nil
 			}
@@ -143,7 +143,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case ScreenBackup:
 			switch msg.String() {
 			case "y", "Y":
-				m.Installer.RunBackup()
+				if _, err := m.Installer.RunBackup(); err != nil {
+				m.InstallLog = append(m.InstallLog, fmt.Sprintf("ERR backup: %v", err))
+			}
 				m.Screen = ScreenInstall
 				m.InstallTotal = len(m.Selected)
 				return m, m.startInstall()
@@ -327,7 +329,18 @@ func (m *Model) applyProfile() {
 	}
 
 	targetType := profileTypes[m.ProfileCursor]
-	targetPlatform := platform.PlatformInfo{Type: targetType}
+
+	var targetPlatform platform.PlatformInfo
+	switch targetType {
+	case platform.PlatformOmarchy:
+		targetPlatform = platform.PlatformInfo{Type: targetType, HasGUI: true, IsWayland: true}
+	case platform.PlatformMacOS:
+		targetPlatform = platform.PlatformInfo{Type: targetType, HasGUI: true, IsWayland: false}
+	case platform.PlatformWSL:
+		targetPlatform = platform.PlatformInfo{Type: targetType, HasGUI: false, IsWayland: false}
+	default:
+		targetPlatform = platform.PlatformInfo{Type: targetType, HasGUI: true, IsWayland: false}
+	}
 	defaults := platform.DefaultComponents(targetPlatform)
 
 	defaultSet := make(map[string]bool)
