@@ -7,12 +7,13 @@
 #          WINDOW MANAGER AUTOSTART
 # ---------------------------------------------
 start_if_needed() {
-    WM_VAR="/$ZELLIJ"
-    WM_CMD="zellij"
-    
-    if [[ $- == *i* ]] && [[ -z "${WM_VAR#/}" ]] && [[ -t 1 ]]; then
-        exec $WM_CMD
-    fi
+    # Abre zellij solo en terminales locales nuevas, nunca anidado ni en
+    # IDEs/SSH, y nunca si falta el binario.
+    [[ -o interactive && -t 1 ]] || return
+    [[ -n "$PACMAN_NO_AUTOSTART$ZELLIJ$TMUX$SSH_CONNECTION$NVIM" ]] && return
+    [[ "$TERM_PROGRAM" == "vscode" ]] && return
+    command -v zellij &> /dev/null || return
+    exec zellij
 }
 
 # ---------------------------------------------
