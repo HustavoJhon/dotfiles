@@ -220,18 +220,21 @@ func (m Model) View() string {
 		content = m.doneView()
 	}
 
-	box := BorderStyle.Width(min(m.Width-4, 84)).Render(content)
+	style := BorderStyle.Width(min(m.Width-4, 84))
+	if m.Screen == ScreenWelcome {
+		style = style.Align(lipgloss.Center)
+	}
+	box := style.Render(content)
 	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, box)
 }
 
 func center(s string) string { return lipgloss.PlaceHorizontal(80, lipgloss.Center, s) }
 
 func (m Model) platform() string {
-	name := m.Installer.Distro.Name()
 	if m.Installer.Omarchy {
-		name += "  " + OmarchyStyle.Render("● Omarchy detectado")
+		return OmarchyStyle.Render("● Omarchy " + m.Installer.Info.Version + " detectado")
 	}
-	return name
+	return m.Installer.Distro.Name()
 }
 
 func (m Model) welcomeView() string {

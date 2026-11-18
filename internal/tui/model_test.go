@@ -37,7 +37,7 @@ func TestFlowOnOmarchy(t *testing.T) {
 	m := NewModel(inst, "test")
 	m, _ = step(t, m, tea.WindowSizeMsg{Width: 100, Height: 50})
 
-	if v := m.View(); !strings.Contains(v, "Omarchy detectado") || !strings.Contains(v, "dry-run") {
+	if v := m.View(); !strings.Contains(v, "detectado") || !strings.Contains(v, "dry-run") {
 		t.Fatalf("welcome view missing platform info:\n%s", v)
 	}
 
