@@ -28,13 +28,14 @@ check "instala zsh y tmux (sin paquetes)" "$BIN" --install zsh,tmux --no-package
 check ".zshrc es symlink al repo"     bash -c "[ \"\$(readlink '$HOME/.zshrc')\" = '$DOTFILES/shell/.zshrc' ]"
 check "tmux.conf enlazado"            test -L "$HOME/.config/tmux/tmux.conf"
 check "aliases.zsh enlazado"          test -L "$HOME/.dotfiles/zsh/aliases.zsh"
-check ".zshrc previo respaldado"      bash -c "cat '$HOME'/.zshrc.bak.* | grep -q previo"
+check ".zshrc previo respaldado"      bash -c "cat '$HOME'/.dotfiles-backup/links/*/.zshrc | grep -q previo"
+check "sin .bak junto al original"    bash -c "! ls '$HOME'/.zshrc.bak.* 2>/dev/null"
 check "backup completo creado"        test -d "$HOME/.dotfiles-backup"
 
 # segunda ejecución idempotente: no crea más backups
-before=$(ls "$HOME"/.zshrc.bak.* | wc -l)
+before=$(find "$HOME/.dotfiles-backup/links" -name .zshrc | wc -l)
 "$BIN" --install zsh --no-packages --no-backup >/dev/null 2>&1
-check "reinstalar es idempotente"     test "$(ls "$HOME"/.zshrc.bak.* | wc -l)" -eq "$before"
+check "reinstalar es idempotente"     test "$(find "$HOME/.dotfiles-backup/links" -name .zshrc | wc -l)" -eq "$before"
 check "--status reporta enlazado"     bash -c "'$BIN' --status | grep -q 'enlazado'"
 
 echo
