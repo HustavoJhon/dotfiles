@@ -5,12 +5,14 @@
 ## Estructura del Proyecto
 
 ```
+omarchy/      # Overrides de Omarchy: Hyprland Lua, shell.json, temas, branding
 shell/        # Shell configs (ZSH con Powerlevel10k)
 term/         # Terminal emuladores (Kitty, WezTerm, Ghostty)
 wm/           # Window manager + multiplexers (Hyprland, Tmux, Zellij)
 editor/       # Neovim (LazyVim, LSP, completions)
 prompt/       # Starship prompt
-installer/    # Go TUI installer (Bubble Tea + Lip Gloss)
+cmd/ internal/ # Go TUI installer (Bubble Tea + Lip Gloss)
+e2e/          # Tests end-to-end (make e2e, Docker)
 scripts/      # Shell + Python automation
 assets/       # Logos, banners, wallpapers, fonts
 docs/         # Documentación
@@ -32,7 +34,11 @@ windows/      # Configs para Windows
 
 - Usar `make build` para compilar el instalador
 - Usar `make run` para probar localmente
-- Usar `make test` para tests Go
+- Usar `make test` para tests Go y `make e2e` para tests en Docker
+- Los módulos se definen en `internal/installer/modules.go` (cada uno con sus `Links`)
+- En Omarchy: nunca enlazar `~/.config/hypr` entero; solo los `.lua` de usuario.
+  Nunca tocar `/usr/share/omarchy/`. `monitors.lua` no se versiona.
+- Commits cortos, uno por paso, sin líneas de coautoría
 - Las configs van en sus carpetas categorizadas (`shell/`, `term/`, etc.)
 - Los scripts van en `scripts/`
 - Assets multimedia en `assets/`
@@ -42,6 +48,5 @@ windows/      # Configs para Windows
 | Skill | Descripción |
 |-------|-------------|
 | `tui-patterns` | Patrones Bubble Tea para el instalador |
-| `installer-steps` | Pasos de instalación, OS detection |
 
 Ver `skills/` para más detalles.
