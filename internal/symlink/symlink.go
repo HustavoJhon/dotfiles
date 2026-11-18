@@ -54,7 +54,11 @@ func (m *Manager) Check(l Link) Status {
 		return Missing
 	}
 	if info.Mode()&os.ModeSymlink != 0 {
-		if target, _ := os.Readlink(dest); target == src {
+		target, _ := os.Readlink(dest)
+		if !filepath.IsAbs(target) {
+			target = filepath.Join(filepath.Dir(dest), target)
+		}
+		if filepath.Clean(target) == filepath.Clean(src) {
 			return Linked
 		}
 	}

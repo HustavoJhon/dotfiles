@@ -77,3 +77,17 @@ func TestDryRunAndMissingSource(t *testing.T) {
 		t.Fatal("dry-run must not touch the filesystem")
 	}
 }
+
+func TestRelativeLinkCountsAsLinked(t *testing.T) {
+	m, repo, home := setup(t)
+	rel, err := filepath.Rel(home, filepath.Join(repo, "cfg/a.conf"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(rel, filepath.Join(home, "a.conf")); err != nil {
+		t.Fatal(err)
+	}
+	if got := m.Check(Link{Src: "cfg/a.conf", Dest: "a.conf"}); got != Linked {
+		t.Fatalf("relative symlink: got %v, want Linked", got)
+	}
+}
