@@ -34,7 +34,7 @@ var Components = []Component{
 	{
 		ID:          "omarchy",
 		Name:        "Omarchy",
-		Description: "Hyprland (Lua), bar, temas, branding PACMAN y terminales integradas al tema",
+		Description: "Hyprland Lua, barra, temas, branding PACMAN y terminales",
 		Platform:    OmarchyOnly,
 		Default:     true,
 		Links: []symlink.Link{
