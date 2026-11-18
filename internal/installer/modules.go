@@ -134,7 +134,7 @@ var Components = []Component{
 		ID:          "hyprland",
 		Name:        "Hyprland",
 		Description: "Compositor Wayland (config clásica .conf, fuera de Omarchy)",
-		Packages:    []string{"hyprland", "hyprlock", "hypridle", "waybar", "wofi", "dunst"},
+		Packages:    []string{"hyprland", "hyprlock", "hypridle", "hyprpaper", "waybar", "wofi", "dunst"},
 		Platform:    NotOmarchy,
 		Links:       []symlink.Link{l("wm/hypr", ".config/hypr", "Hyprland")},
 	},

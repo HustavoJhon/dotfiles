@@ -14,7 +14,7 @@ disponibles en el sistema actual.
 | ghostty | ghostty | `term/ghostty/config` → `~/.config/ghostty/config` | no Omarchy | |
 | wezterm | wezterm | `term/wezterm/.wezterm.lua` → `~/.wezterm.lua` | todas | |
 | fastfetch | fastfetch | `term/fastfetch` → `~/.config/fastfetch` | no Omarchy | ✓ |
-| hyprland | hyprland hyprlock hypridle waybar wofi dunst | `wm/hypr` → `~/.config/hypr` | no Omarchy | |
+| hyprland | hyprland hyprlock hypridle hyprpaper waybar wofi dunst | `wm/hypr` → `~/.config/hypr` | no Omarchy | |
 | nvim | neovim | `editor/nvim` → `~/.config/nvim` | todas | |
 
 ## Paquetes
