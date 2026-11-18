@@ -10,43 +10,29 @@ type ArchAdapter struct {
 }
 
 func (a *ArchAdapter) Name() string {
+	if a.info.Name != "" {
+		return a.info.Name
+	}
 	return "Arch Linux"
 }
 
-func (a *ArchAdapter) PackageManager() string {
-	return "pacman"
+func (a *ArchAdapter) PackageManager() string { return "pacman" }
+
+func (a *ArchAdapter) IsInstalled(pkg string) bool {
+	return quiet("pacman", "-Q", pkg)
 }
 
+// InstallPackage tries the official repos first and falls back to an AUR
+// helper when the package is not found there.
 func (a *ArchAdapter) InstallPackage(pkg string) error {
-	cmd := exec.Command("sudo", "pacman", "-S", "--noconfirm", "--needed", pkg)
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	return cmd.Run()
-}
-
-func (a *ArchAdapter) InstallPackages(pkgs []string) error {
-	args := append([]string{"pacman", "-S", "--noconfirm", "--needed"}, pkgs...)
-	cmd := exec.Command("sudo", args...)
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	return cmd.Run()
-}
-
-func (a *ArchAdapter) RemovePackage(pkg string) error {
-	cmd := exec.Command("sudo", "pacman", "-R", "--noconfirm", pkg)
-	return cmd.Run()
-}
-
-func (a *ArchAdapter) UpdateSystem() error {
-	cmd := exec.Command("sudo", "pacman", "-Syu", "--noconfirm")
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	return cmd.Run()
+	if quiet("pacman", "-Si", pkg) {
+		return run("sudo", "-n", "pacman", "-S", "--noconfirm", "--needed", pkg)
+	}
+	return a.InstallAUR(pkg)
 }
 
 func (a *ArchAdapter) DetectAURHelper() string {
-	helpers := []string{"yay", "paru", "trizen", "pikaur"}
-	for _, h := range helpers {
+	for _, h := range []string{"yay", "paru", "trizen", "pikaur"} {
 		if _, err := exec.LookPath(h); err == nil {
 			return h
 		}
@@ -57,18 +43,8 @@ func (a *ArchAdapter) DetectAURHelper() string {
 func (a *ArchAdapter) InstallAUR(pkg string) error {
 	helper := a.DetectAURHelper()
 	if helper == "" {
-		return fmt.Errorf("no AUR helper found (install yay or paru)")
+		return fmt.Errorf("%s is not in the official repos and no AUR helper (yay/paru) was found", pkg)
 	}
-	cmd := exec.Command(helper, "-S", "--noconfirm", pkg)
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	return cmd.Run()
-}
-
-func (a *ArchAdapter) IsCachyOS() bool {
-	return a.info.ID == "cachyos"
-}
-
-func (a *ArchAdapter) IsEndeavourOS() bool {
-	return a.info.ID == "endeavouros"
+	// The helper calls sudo itself; credentials were cached by EnsureSudo.
+	return run(helper, "-S", "--noconfirm", "--needed", pkg)
 }
