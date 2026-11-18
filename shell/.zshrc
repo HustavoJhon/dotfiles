@@ -29,12 +29,7 @@ plugins=(
     git
 )
 
-source $ZSH/oh-my-zsh.sh
-
-# ---------------------------------------------
-#                 GO PATH
-# ---------------------------------------------
-export PATH="$PATH:/usr/local/go/bin"
+[[ -f "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
 
 # ---------------------------------------------
 #              HOMEBREW SETUP
@@ -77,6 +72,7 @@ DOTFILES_ZSH="$HOME/.dotfiles/zsh"
 # ---------------------------------------------
 #           EXTERNAL TOOLS INIT
 # ---------------------------------------------
+command -v starship &> /dev/null && [[ ! -f "$(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && eval "$(starship init zsh)"
 command -v carapace &> /dev/null && source <(carapace _carapace)
 command -v fzf &> /dev/null && eval "$(fzf --zsh)"
 command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
@@ -90,12 +86,12 @@ command -v atuin &> /dev/null && eval "$(atuin init zsh)"
 # ---------------------------------------------
 #          WINDOW MANAGER AUTOSTART
 # ---------------------------------------------
+# Desactívalo con: export PACMAN_NO_AUTOSTART=1 (en ~/.zshenv)
 start_if_needed
 
 # ---------------------------------------------
 #              STARTUP BANNER
 # ---------------------------------------------
-if [ -f "$HOME/.dotfiles/banner.txt" ]; then
-    clear
+if [[ -o interactive && -f "$HOME/.dotfiles/banner.txt" && -z "$PACMAN_NO_BANNER" ]]; then
     command -v lolcat &> /dev/null && cat "$HOME/.dotfiles/banner.txt" | lolcat || cat "$HOME/.dotfiles/banner.txt"
 fi
