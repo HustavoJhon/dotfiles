@@ -61,12 +61,17 @@ install_go() {
             aarch64|arm64) arch=arm64 ;;
             *) die "arquitectura no soportada: $(uname -m)" ;;
         esac
+        local tmp file sum
         version="$(curl -fsSL 'https://go.dev/VERSION?m=text' | head -1)"
+        file="${version}.linux-${arch}.tar.gz"
+        tmp="$(mktemp -d)"
+        trap 'rm -rf "$tmp"' EXIT
         info "Descargando $version ($arch)"
-        curl -fsSL "https://go.dev/dl/${version}.linux-${arch}.tar.gz" -o /tmp/go.tar.gz
+        curl -fsSL "https://dl.google.com/go/${file}" -o "$tmp/$file"
+        sum="$(curl -fsSL "https://dl.google.com/go/${file}.sha256")"
+        echo "${sum}  $tmp/$file" | sha256sum -c --quiet - || die "checksum de Go inválido"
         sudo rm -rf /usr/local/go
-        sudo tar -C /usr/local -xzf /tmp/go.tar.gz
-        rm -f /tmp/go.tar.gz
+        sudo tar -C /usr/local -xzf "$tmp/$file"
         export PATH="/usr/local/go/bin:$PATH"
     fi
 }
