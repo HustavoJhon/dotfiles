@@ -50,7 +50,8 @@ Each distro family implements this interface:
 | FedoraAdapter | dnf | Fedora, RHEL |
 
 Detection reads `/etc/os-release` at runtime. `DistroInfo.IsOmarchy()` switches
-the component set (see [OMARCHY.md](OMARCHY.md)).
+the component set (Omarchy-aware), and `distro.IsWSL()` hides GUI components;
+see [OMARCHY.md](OMARCHY.md).
 
 ## TUI Flow
 
