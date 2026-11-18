@@ -22,6 +22,8 @@ type Component struct {
 	Packages []string
 	Links    []symlink.Link
 	Platform Platform
+	// GUI components are hidden on WSL (no display server).
+	GUI bool
 	// Default marks the component as pre-selected in the menu.
 	Default bool
 	// PostInstall runs after links are in place (e.g. reload Hyprland).
@@ -99,6 +101,7 @@ var Components = []Component{
 	},
 	{
 		ID:          "kitty",
+		GUI:         true,
 		Name:        "Kitty",
 		Description: "Terminal acelerada por GPU (tema propio)",
 		Packages:    []string{"kitty"},
@@ -108,6 +111,7 @@ var Components = []Component{
 	},
 	{
 		ID:          "ghostty",
+		GUI:         true,
 		Name:        "Ghostty",
 		Description: "Terminal nativa por GPU",
 		Packages:    []string{"ghostty"},
@@ -116,6 +120,7 @@ var Components = []Component{
 	},
 	{
 		ID:          "wezterm",
+		GUI:         true,
 		Name:        "WezTerm",
 		Description: "Terminal configurable en Lua",
 		Packages:    []string{"wezterm"},
@@ -132,6 +137,7 @@ var Components = []Component{
 	},
 	{
 		ID:          "hyprland",
+		GUI:         true,
 		Name:        "Hyprland",
 		Description: "Compositor Wayland (config clásica .conf, fuera de Omarchy)",
 		Packages:    []string{"hyprland", "hyprlock", "hypridle", "hyprpaper", "waybar", "wofi", "dunst"},

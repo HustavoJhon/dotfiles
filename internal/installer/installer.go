@@ -19,6 +19,7 @@ type Installer struct {
 	Info        distro.DistroInfo
 	Distro      distro.DistroAdapter
 	Omarchy     bool
+	WSL         bool
 	DryRun      bool
 	// SkipPackages links configs only (set when sudo is unavailable).
 	SkipPackages bool
@@ -46,6 +47,7 @@ func NewInstaller() (*Installer, error) {
 		Info:        info,
 		Distro:      distro.GetAdapter(info),
 		Omarchy:     info.IsOmarchy(),
+		WSL:         distro.IsWSL(),
 	}, nil
 }
 
@@ -98,6 +100,9 @@ func (inst *Installer) AvailableComponents() []Component {
 			continue
 		}
 		if c.Platform == NotOmarchy && inst.Omarchy {
+			continue
+		}
+		if c.GUI && inst.WSL {
 			continue
 		}
 		out = append(out, c)

@@ -66,3 +66,15 @@ func TestFindComponents(t *testing.T) {
 		t.Fatalf("got %d, err %v", len(got), err)
 	}
 }
+
+func TestWSLHidesGUIComponents(t *testing.T) {
+	inst := &Installer{WSL: true}
+	for _, c := range inst.AvailableComponents() {
+		if c.GUI {
+			t.Errorf("%s is a GUI component and must be hidden on WSL", c.ID)
+		}
+	}
+	if _, err := inst.FindComponents([]string{"zsh", "tmux"}); err != nil {
+		t.Fatal(err)
+	}
+}
