@@ -57,4 +57,4 @@ clean: ## Borrar binarios
 	rm -rf bin/
 
 help: ## Esta ayuda
-	@grep -hE '^[a-z -]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[33m%-14s\033[0m %s\n", $$1, $$2}'
+	@grep -hE '^[a-z0-9 -]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[33m%-14s\033[0m %s\n", $$1, $$2}'
