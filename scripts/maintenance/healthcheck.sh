@@ -31,20 +31,23 @@ echo -n "Disk: "
 df -h / | awk 'NR==2 {print $3 "/" $2 " (" $5 ")"}'
 
 echo ""
-echo "--- Symlinks ---"
-for f in "$HOME/.zshrc" "$HOME/.config/tmux/tmux.conf" "$HOME/.p10k.zsh"; do
-    if [ -L "$f" ]; then
-        echo "  ✓ $f -> $(readlink -f "$f")"
-    elif [ -f "$f" ]; then
-        echo "  ! $f (regular file, not symlink)"
-    else
-        echo "  ✗ $f (missing)"
-    fi
-done
-
+echo "--- Enlaces ---"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+if [ -x "$REPO/bin/installer" ]; then
+    "$REPO/bin/installer" --status
+else
+    echo "  (compila primero: make build)"
+fi
 echo ""
 echo "--- Tools ---"
-for tool in zsh kitty tmux nvim fzf bat eza zoxide starship zellij fastfetch; do
+TOOLS="zsh tmux nvim fzf bat eza zoxide starship zellij fastfetch"
+if [ -d /usr/share/omarchy ] || grep -q '^ID=omarchy' /etc/os-release 2>/dev/null; then
+    TOOLS="$TOOLS omarchy hyprctl"
+    echo -n "Omarchy: "; omarchy version 2>/dev/null || echo "?"
+else
+    TOOLS="$TOOLS kitty"
+fi
+for tool in $TOOLS; do
     if command -v "$tool" &> /dev/null; then
         echo "  ✓ $tool"
     else
