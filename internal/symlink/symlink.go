@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -102,7 +103,15 @@ func (m *Manager) link(src, dest string) error {
 	}
 
 	if _, err := os.Lstat(dest); err == nil {
-		backup := fmt.Sprintf("%s.bak.%s", dest, m.now().Format("20060102-150405"))
+		// Keep backups out of config dirs: a sibling "theme.bak" would show up
+		// as an extra Omarchy theme, an extra Hyprland file, etc.
+		backup, err := m.backupPath(dest)
+		if err != nil {
+			return err
+		}
+		if err := os.MkdirAll(filepath.Dir(backup), 0o755); err != nil {
+			return err
+		}
 		if err := os.Rename(dest, backup); err != nil {
 			return fmt.Errorf("no se pudo respaldar %s: %w", dest, err)
 		}
@@ -110,4 +119,24 @@ func (m *Manager) link(src, dest string) error {
 	}
 
 	return os.Symlink(src, dest)
+}
+
+// BackupDir is where replaced files go: ~/.dotfiles-backup/links/<timestamp>.
+func (m *Manager) BackupDir() string {
+	return filepath.Join(m.HomeDir, ".dotfiles-backup", "links", m.now().Format("20060102-150405"))
+}
+
+func (m *Manager) backupPath(dest string) (string, error) {
+	rel, err := filepath.Rel(m.HomeDir, dest)
+	if err != nil || strings.HasPrefix(rel, "..") {
+		return "", fmt.Errorf("%s está fuera de $HOME", dest)
+	}
+	path := filepath.Join(m.BackupDir(), rel)
+	// Never overwrite an earlier backup taken in the same second.
+	for i := 1; ; i++ {
+		if _, err := os.Lstat(path); os.IsNotExist(err) {
+			return path, nil
+		}
+		path = fmt.Sprintf("%s.%d", filepath.Join(m.BackupDir(), rel), i)
+	}
 }

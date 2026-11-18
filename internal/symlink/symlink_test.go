@@ -57,7 +57,10 @@ func TestBacksUpExistingFile(t *testing.T) {
 	if _, err := m.CreateLinks([]Link{link}); err != nil {
 		t.Fatal(err)
 	}
-	data, err := os.ReadFile(dest + ".bak.20260102-030405")
+	if _, err := os.Lstat(dest + ".bak.20260102-030405"); !os.IsNotExist(err) {
+		t.Fatal("backups must not be left next to the original")
+	}
+	data, err := os.ReadFile(filepath.Join(home, ".dotfiles-backup/links/20260102-030405/a.conf"))
 	if err != nil || string(data) != "mine" {
 		t.Fatalf("backup missing: %q %v", data, err)
 	}
