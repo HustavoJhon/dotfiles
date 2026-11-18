@@ -1,104 +1,42 @@
-#!/bin/bash
-# E2E tests for PACMAN installer
+#!/usr/bin/env bash
+# E2E del instalador PACMAN. Pensado para Dockerfile.test, pero se puede
+# ejecutar en local con HOME apuntando a un directorio temporal:
+#   HOME=$(mktemp -d) PACMAN_DOTFILES=$PWD e2e/e2e_test.sh
+set -uo pipefail
 
-set -e
+DOTFILES="${PACMAN_DOTFILES:-$HOME/dotfiles}"
+BIN="$DOTFILES/bin/installer"
+export PACMAN_DOTFILES="$DOTFILES"
 
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-PASSED=0
-FAILED=0
+PASSED=0 FAILED=0
+pass() { printf '\033[32m[PASS]\033[0m %s\n' "$1"; PASSED=$((PASSED + 1)); }
+fail() { printf '\033[31m[FAIL]\033[0m %s\n' "$1"; FAILED=$((FAILED + 1)); }
+check() { local desc="$1"; shift; if "$@" >/dev/null 2>&1; then pass "$desc"; else fail "$desc"; fi; }
 
-log_test() { printf "${YELLOW}[TEST]${NC} %s\n" "$1"; }
-log_pass() { printf "${GREEN}[PASS]${NC} %s\n" "$1"; PASSED=$((PASSED + 1)); }
-log_fail() { printf "${RED}[FAIL]${NC} %s\n" "$1"; FAILED=$((FAILED + 1)); }
+check "--version muestra PACMAN"     bash -c "'$BIN' --version | grep -q PACMAN"
+check "--help funciona"               bash -c "'$BIN' --help 2>&1 | grep -q -- --install"
+check "--list muestra zsh"            bash -c "'$BIN' --list | grep -q zsh"
+check "componente desconocido falla"  bash -c "! '$BIN' --install nope"
 
-# --- Basic Tests ---
+# dry-run no debe crear nada
+"$BIN" --dry-run --install zsh >/dev/null 2>&1
+check "dry-run no crea ~/.zshrc"      test ! -e "$HOME/.zshrc"
 
-test_help() {
-    log_test "installer --help exits cleanly"
-    if /usr/local/bin/pacman-installer --help | head -5; then
-        log_pass "installer --help works"
-    else
-        log_fail "installer --help failed"
-    fi
-}
+# un archivo previo debe respaldarse
+echo "previo" > "$HOME/.zshrc"
+check "instala zsh y tmux (sin paquetes)" "$BIN" --install zsh,tmux --no-packages
+check ".zshrc es symlink al repo"     bash -c "[ \"\$(readlink '$HOME/.zshrc')\" = '$DOTFILES/shell/.zshrc' ]"
+check "tmux.conf enlazado"            test -L "$HOME/.config/tmux/tmux.conf"
+check "aliases.zsh enlazado"          test -L "$HOME/.dotfiles/zsh/aliases.zsh"
+check ".zshrc previo respaldado"      bash -c "cat '$HOME'/.zshrc.bak.* | grep -q previo"
+check "backup completo creado"        test -d "$HOME/.dotfiles-backup"
 
-test_version() {
-    log_test "installer --version shows version"
-    output=$(/usr/local/bin/pacman-installer --version 2>&1)
-    if echo "$output" | grep -q "PACMAN"; then
-        log_pass "installer --version shows PACMAN"
-    else
-        log_fail "installer --version output: $output"
-    fi
-}
+# segunda ejecución idempotente: no crea más backups
+before=$(ls "$HOME"/.zshrc.bak.* | wc -l)
+"$BIN" --install zsh --no-packages --no-backup >/dev/null 2>&1
+check "reinstalar es idempotente"     test "$(ls "$HOME"/.zshrc.bak.* | wc -l)" -eq "$before"
+check "--status reporta enlazado"     bash -c "'$BIN' --status | grep -q 'enlazado'"
 
-test_backup() {
-    log_test "installer --backup-only runs without error"
-    output=$(/usr/local/bin/pacman-installer --backup-only 2>&1)
-    if echo "$output" | grep -q "Backup"; then
-        log_pass "backup completed"
-    else
-        log_fail "backup output: $output"
-    fi
-}
-
-# --- Config Files Check ---
-
-test_shell_configs() {
-    log_test "shell configs exist"
-    if [ -f "/app/shell/.zshrc" ]; then
-        log_pass "shell/.zshrc exists"
-    else
-        log_fail "shell/.zshrc missing"
-    fi
-}
-
-test_term_configs() {
-    log_test "terminal configs exist"
-    if [ -f "/app/term/kitty/kitty.conf" ]; then
-        log_pass "kitty config exists"
-    else
-        log_fail "kitty config missing"
-    fi
-    if [ -f "/app/term/wezterm/.wezterm.lua" ]; then
-        log_pass "wezterm config exists"
-    else
-        log_fail "wezterm config missing"
-    fi
-}
-
-test_wm_configs() {
-    log_test "wm configs exist"
-    if [ -f "/app/wm/hypr/hyprland.conf" ]; then
-        log_pass "hyprland config exists"
-    fi
-    if [ -f "/app/wm/zellij/config.kdl" ]; then
-        log_pass "zellij config exists"
-    fi
-    if [ -f "/app/wm/tmux/.tmux.conf" ]; then
-        log_pass "tmux config exists"
-    fi
-}
-
-# --- Run Tests ---
-
-echo "=================================="
-echo "  PACMAN E2E Tests"
-echo "=================================="
-echo ""
-
-test_help
-test_version
-test_backup
-test_shell_configs
-test_term_configs
-test_wm_configs
-
-echo ""
-echo "=================================="
-echo "  Results: $PASSED passed, $FAILED failed"
-echo "=================================="
-exit $FAILED
+echo
+echo "Resultados: $PASSED ok, $FAILED fallos"
+exit $((FAILED > 0))
