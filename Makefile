@@ -1,56 +1,60 @@
 # PACMAN - Makefile
 
-BINARY=bin/installer
-GOFLAGS=-ldflags="-s -w"
+BINARY  := bin/installer
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+LDFLAGS := -s -w -X main.version=$(VERSION)
 
-.PHONY: all build install clean backup update fmt lint test run help
+.PHONY: all build run install dry-run status list omarchy omarchy-sync backup update fmt lint test e2e clean help
 
 all: build
 
-build:
-	@echo "Building $(BINARY)..."
+build: ## Compilar el instalador
 	@mkdir -p bin
-	go build $(GOFLAGS) -o $(BINARY) ./cmd/installer
-	@echo "✓ Build complete: $(BINARY)"
+	go build -ldflags "$(LDFLAGS)" -o $(BINARY) ./cmd/installer
+	@echo "✓ $(BINARY) ($(VERSION))"
 
-run: build
+run install: build ## Abrir el instalador TUI
 	@./$(BINARY)
 
-install: build
-	@./$(BINARY)
+dry-run: build ## TUI sin modificar nada
+	@./$(BINARY) --dry-run
 
-clean:
-	@echo "Cleaning..."
-	@rm -rf bin/ bin-debug/ bin-release/
-	@echo "✓ Clean complete"
+status: build ## Estado de los enlaces
+	@./$(BINARY) --status
 
-backup:
-	@go run ./cmd/installer --backup-only
+list: build ## Componentes disponibles en este sistema
+	@./$(BINARY) --list
 
-update:
-	@git pull --rebase
-	@go mod tidy
+omarchy: build ## Instalar solo el módulo Omarchy (sin TUI)
+	@./$(BINARY) --install omarchy
+
+omarchy-sync: ## Copiar la config viva de Omarchy al repo
+	@./scripts/omarchy/sync.sh
+
+backup: build ## Backup de configs actuales
+	@./$(BINARY) --backup-only
+
+update: ## git pull + rebuild
+	git pull --rebase
+	go mod tidy
 	@$(MAKE) build
 
-fmt:
-	@go fmt ./...
-	@echo "✓ Formatting complete"
+fmt: ## Formatear código Go
+	go fmt ./...
 
-lint:
-	@golangci-lint run ./... 2>/dev/null || echo "⚠ golangci-lint not installed, skipping"
+lint: ## go vet + golangci-lint (si existe)
+	go vet ./...
+	@command -v golangci-lint >/dev/null && golangci-lint run ./... || echo "⚠ golangci-lint no instalado, solo go vet"
 
-test:
-	@go test ./... -v
-	@echo "✓ Tests complete"
+test: ## Tests Go
+	go test ./...
 
-help:
-	@echo "PACMAN Commands:"
-	@echo "  make build    - Build Go TUI installer"
-	@echo "  make install  - Run the TUI installer"
-	@echo "  make run      - Build and run"
-	@echo "  make clean    - Remove build artifacts"
-	@echo "  make backup   - Run backup only"
-	@echo "  make update   - Git pull, tidy deps, rebuild"
-	@echo "  make fmt      - Format Go code"
-	@echo "  make lint     - Run golangci-lint"
-	@echo "  make test     - Run all tests"
+e2e: ## Tests e2e en Docker
+	docker build -t pacman-test -f Dockerfile.test .
+	docker run --rm pacman-test
+
+clean: ## Borrar binarios
+	rm -rf bin/
+
+help: ## Esta ayuda
+	@grep -hE '^[a-z -]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  \033[33m%-14s\033[0m %s\n", $$1, $$2}'
