@@ -2,65 +2,34 @@ package tui
 
 import "github.com/charmbracelet/lipgloss"
 
-// Gruvbox palette
+// Pac-Man arcade palette on a Gruvbox base.
 var (
-	DarkBg  = lipgloss.Color("#282828")
-	Darker  = lipgloss.Color("#1d2021")
-	Light   = lipgloss.Color("#ebdbb2")
-	White   = lipgloss.Color("#fbf1c7")
-	Red     = lipgloss.Color("#fb4934")
-	Green   = lipgloss.Color("#b8bb26")
-	Yellow  = lipgloss.Color("#fabd2f")
-	Blue    = lipgloss.Color("#83a598")
-	Purple  = lipgloss.Color("#d3869b")
-	Aqua    = lipgloss.Color("#8ec07c")
-	Orange  = lipgloss.Color("#fe8019")
-	Gray    = lipgloss.Color("#928374")
+	Light  = lipgloss.Color("#ebdbb2")
+	Red    = lipgloss.Color("#fb4934")
+	Green  = lipgloss.Color("#b8bb26")
+	Yellow = lipgloss.Color("#fabd2f")
+	Blue   = lipgloss.Color("#83a598")
+	Aqua   = lipgloss.Color("#8ec07c")
+	Orange = lipgloss.Color("#fe8019")
+	Gray   = lipgloss.Color("#665c54")
+	DimFg  = lipgloss.Color("#a89984")
 
-	GhostRed = lipgloss.Color("#cc241d")
-	DimFg    = lipgloss.Color("#a89984")
-
-	TitleStyle = lipgloss.NewStyle().
-			Foreground(Orange).
-			Bold(true)
-
-	SubtitleStyle = lipgloss.NewStyle().
-			Foreground(Blue)
-
-	GhostStyle = lipgloss.NewStyle().
-			Foreground(GhostRed).
-			Bold(true).
-			Align(lipgloss.Center)
-
-	BannerStyle = lipgloss.NewStyle().
-			Foreground(Red).
-			Bold(true).
-			Align(lipgloss.Center)
-
-	SelectedStyle = lipgloss.NewStyle().
-			Foreground(Yellow).
-			Bold(true)
-
-	DimStyle = lipgloss.NewStyle().
-			Foreground(DimFg)
-
-	ErrorStyle = lipgloss.NewStyle().
-			Foreground(Red).
-			Bold(true)
-
-	SuccessStyle = lipgloss.NewStyle().
-			Foreground(Green).
-			Bold(true)
-
-	ItemStyle = lipgloss.NewStyle().
-			Foreground(Light)
+	TitleStyle    = lipgloss.NewStyle().Foreground(Yellow).Bold(true)
+	SubtitleStyle = lipgloss.NewStyle().Foreground(Blue)
+	GhostStyle    = lipgloss.NewStyle().Foreground(Red)
+	BannerStyle   = lipgloss.NewStyle().Foreground(Yellow).Bold(true)
+	SelectedStyle = lipgloss.NewStyle().Foreground(Yellow).Bold(true)
+	ItemStyle     = lipgloss.NewStyle().Foreground(Light)
+	DimStyle      = lipgloss.NewStyle().Foreground(DimFg)
+	HelpStyle     = lipgloss.NewStyle().Foreground(Gray)
+	ErrorStyle    = lipgloss.NewStyle().Foreground(Red).Bold(true)
+	WarnStyle     = lipgloss.NewStyle().Foreground(Orange)
+	SuccessStyle  = lipgloss.NewStyle().Foreground(Green).Bold(true)
+	OmarchyStyle  = lipgloss.NewStyle().Foreground(Aqua).Bold(true)
+	CodeStyle     = lipgloss.NewStyle().Foreground(Aqua)
 
 	BorderStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder()).
-			BorderForeground(Gray).
-			Padding(0, 1)
-
-	HeaderStyle = lipgloss.NewStyle().
-			Foreground(DimFg).
-			Align(lipgloss.Center)
+			BorderForeground(Yellow).
+			Padding(1, 2)
 )
