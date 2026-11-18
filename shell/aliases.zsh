@@ -4,22 +4,30 @@
 # =============================================
 
 # ---------------------------------------------
-#                 EXA ALIASES
+#              LS COMMAND (eza/exa)
 # ---------------------------------------------
-# Main ls replacement
-alias ls='exa --icons --group-directories-first'
-alias la='exa -a --group-directories-first --icons'
-alias ll='exa -l --header --group-directories-first --icons --no-user --no-time'
-alias lt='exa -aT --group-directories-first --git-ignore --icons'
-alias l.='exa -a | grep "^\."'
-alias li='exa --git-ignore --group-directories-first --icons'
-alias lg='exa -al --header --git --group-directories-first --icons --no-user --no-time'
-alias lp='exa -al --header --octal-permissions --group-directories-first --icons --no-user --no-time'
-alias tree='exa --icons --tree -L 1 -I node_modules'
+if command -v eza &>/dev/null; then
+    LS_CMD='eza'
+elif command -v exa &>/dev/null; then
+    LS_CMD='exa'
+fi
 
-# Tree with different depths
-alias tree2='exa --icons --tree -L 2 -I node_modules'
-alias tree3='exa --icons --tree -L 3 -I node_modules'
+# ---------------------------------------------
+#              LS ALIASES
+# ---------------------------------------------
+if [[ -n "$LS_CMD" ]]; then
+    alias ls='$LS_CMD --icons --group-directories-first'
+    alias la='$LS_CMD -a --group-directories-first --icons'
+    alias ll='$LS_CMD -l --header --group-directories-first --icons --no-user --no-time'
+    alias lt='$LS_CMD -aT --group-directories-first --git-ignore --icons'
+    alias l.='$LS_CMD -a | grep "^\."'
+    alias li='$LS_CMD --git-ignore --group-directories-first --icons'
+    alias lg='$LS_CMD -al --header --git --group-directories-first --icons --no-user --no-time'
+    alias lp='$LS_CMD -al --header --octal-permissions --group-directories-first --icons --no-user --no-time'
+    alias tree='$LS_CMD --icons --tree -L 1 -I node_modules'
+    alias tree2='$LS_CMD --icons --tree -L 2 -I node_modules'
+    alias tree3='$LS_CMD --icons --tree -L 3 -I node_modules'
+fi
 
 # ---------------------------------------------
 #                 FZF ALIASES
@@ -87,10 +95,14 @@ alias edit-aliases='nvim ~/.dotfiles/zsh/aliases.zsh'
 # ---------------------------------------------
 alias ports='netstat -tulanp'
 alias myip='curl ifconfig.me'
-alias localip='ipconfig getifaddr en0'
+if [[ "$(uname)" == "Darwin" ]]; then
+    alias localip='ipconfig getifaddr en0'
+else
+    alias localip='hostname -I | awk "{print \$1}"'
+fi
 alias wifi='nmcli d wifi list'
 alias vimrc='nvim ~/.config/nvim/init.lua'
-alias tmuxrc='nvim ~/.tmux.conf && tmux source-file ~/.tmux.conf'
+alias tmuxrc='nvim ~/.config/tmux/tmux.conf && tmux source-file ~/.config/tmux/tmux.conf'
 
 # ---------------------------------------------
 #           FILE OPERATIONS ALIASES
@@ -157,9 +169,4 @@ alias zshconfig='nvim ~/.zshrc'
 alias ohmyzsh='nvim ~/.oh-my-zsh'
 alias hosts='sudo nvim /etc/hosts'
 
-# ---------------------------------------------
-#           FORCE EXA (IMPORTANTE)
-# ---------------------------------------------
-# Esto asegura que exa siempre sobrescriba ls
-unalias ls 2>/dev/null
-alias ls='exa --icons --group-directories-first'
+

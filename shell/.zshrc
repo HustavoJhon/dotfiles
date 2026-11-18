@@ -25,9 +25,12 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 plugins=(
-    command-not-found
     git
 )
+
+if [[ -f /usr/share/command-not-found/command-not-found ]]; then
+    plugins+=(command-not-found)
+fi
 
 [[ -f "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
 
@@ -47,17 +50,17 @@ fi
 # ---------------------------------------------
 #           ZSH PLUGINS (HOMEBREW)
 # ---------------------------------------------
-[ -f "$(dirname $BREW_BIN)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ] && \
-    source "$(dirname $BREW_BIN)/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+[ -f ""$(dirname "$BREW_BIN")"/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ] && \
+    source ""$(dirname "$BREW_BIN")"/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
-[ -f "$(dirname $BREW_BIN)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
-    source "$(dirname $BREW_BIN)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[ -f ""$(dirname "$BREW_BIN")"/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
+    source ""$(dirname "$BREW_BIN")"/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-[ -f "$(dirname $BREW_BIN)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
-    source "$(dirname $BREW_BIN)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f ""$(dirname "$BREW_BIN")"/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
+    source ""$(dirname "$BREW_BIN")"/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-[ -f "$(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme" ] && \
-    source "$(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme"
+[ -f ""$(dirname "$BREW_BIN")"/share/powerlevel10k/powerlevel10k.zsh-theme" ] && \
+    source ""$(dirname "$BREW_BIN")"/share/powerlevel10k/powerlevel10k.zsh-theme"
 
 # ---------------------------------------------
 #      LOAD MODULAR CONFIGS FROM .DOTFILES

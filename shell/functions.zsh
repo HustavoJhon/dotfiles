@@ -9,8 +9,9 @@
 start_if_needed() {
     # Abre zellij solo en terminales locales nuevas, nunca anidado ni en
     # IDEs/SSH, y nunca si falta el binario.
+    # Desactivar: PACMAN_NO_AUTOSTART=1 (o DISABLE_ZELLIJ_AUTO=1)
     [[ -o interactive && -t 1 ]] || return
-    [[ -n "$PACMAN_NO_AUTOSTART$ZELLIJ$TMUX$SSH_CONNECTION$NVIM" ]] && return
+    [[ -n "$PACMAN_NO_AUTOSTART$DISABLE_ZELLIJ_AUTO$ZELLIJ$TMUX$SSH_CONNECTION$NVIM" ]] && return
     [[ "$TERM_PROGRAM" == "vscode" ]] && return
     command -v zellij &> /dev/null || return
     exec zellij
@@ -188,7 +189,7 @@ proj() {
 projects() {
     local project_dir="${PROJECT_PATHS:-$HOME/work}"
     echo "📁 Projects in $project_dir:"
-    exa -1 "$project_dir" 2>/dev/null || ls -1 "$project_dir"
+    eza -1 "$project_dir" 2>/dev/null || ls -1 "$project_dir"
 }
 
 # ---------------------------------------------
