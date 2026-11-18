@@ -42,6 +42,16 @@ func (d DistroInfo) IsOmarchy() bool {
 	return false
 }
 
+// IsWSL reports whether we run under Windows Subsystem for Linux.
+func IsWSL() bool {
+	data, err := os.ReadFile("/proc/version")
+	if err != nil {
+		return false
+	}
+	v := strings.ToLower(string(data))
+	return strings.Contains(v, "microsoft") || strings.Contains(v, "wsl")
+}
+
 func Detect() (DistroInfo, error) {
 	f, err := os.Open("/etc/os-release")
 	if err != nil {
