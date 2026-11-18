@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/progress"
@@ -9,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/hustavojhon/dotfiles/internal/assets"
 	"github.com/hustavojhon/dotfiles/internal/installer"
 )
 
@@ -16,192 +18,198 @@ type Screen int
 
 const (
 	ScreenWelcome Screen = iota
-	ScreenDetect
 	ScreenMenu
 	ScreenBackup
 	ScreenInstall
 	ScreenDone
 )
 
-type installMsg struct {
-	Component installer.Component
+type resultMsg installer.Result
+
+type backupMsg struct {
+	path string
+	err  error
 }
 
-type installErrMsg struct {
-	Component installer.Component
-	Err       error
-}
+type sudoMsg struct{ err error }
 
 type Model struct {
-	Screen       Screen
-	Spinner      spinner.Model
-	Progress     progress.Model
-	Menu         MenuModel
-	Installer    *installer.Installer
-	Selected     []installer.Component
-	DistroName   string
-	InstallStep  int
-	InstallTotal int
-	InstallLog   []string
-	Width        int
-	Height       int
-	Ready        bool
-	Err          error
+	Screen    Screen
+	Spinner   spinner.Model
+	Progress  progress.Model
+	Menu      MenuModel
+	Installer *installer.Installer
+	Version   string
+
+	Selected []installer.Component
+	Missing  []string
+	Step     int
+	Log      []string
+	Failures int
+	Warnings int
+
+	Width, Height int
 }
 
-func NewModel(inst *installer.Installer) Model {
+func NewModel(inst *installer.Installer, version string) Model {
 	s := spinner.New()
-	s.Style = lipgloss.NewStyle().Foreground(Aqua)
+	s.Spinner = spinner.Dot
+	s.Style = lipgloss.NewStyle().Foreground(Yellow)
 
 	return Model{
 		Screen:    ScreenWelcome,
 		Spinner:   s,
-		Progress:  progress.New(progress.WithDefaultGradient()),
+		Progress:  progress.New(progress.WithGradient(string(Yellow), string(Orange)), progress.WithoutPercentage()),
 		Installer: inst,
-		Menu:      NewMenuModel(installer.Components),
+		Version:   version,
+		Menu:      NewMenuModel(inst.AvailableComponents()),
 	}
 }
 
-func (m Model) Init() tea.Cmd {
-	return tea.Batch(m.Spinner.Tick, tea.EnterAltScreen)
-}
+func (m Model) Init() tea.Cmd { return m.Spinner.Tick }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		m.Width = msg.Width
-		m.Height = msg.Height
-		m.Ready = true
-		m.Progress.Width = clamp(msg.Width-20, 20, 100)
+		m.Width, m.Height = msg.Width, msg.Height
+		m.Progress.Width = clamp(msg.Width-24, 20, 60)
 		return m, nil
 
 	case tea.KeyMsg:
-		switch m.Screen {
-		case ScreenWelcome:
-			if msg.String() == "enter" || msg.String() == " " {
-				m.Screen = ScreenDetect
-				info, _ := m.Installer.Distro.(interface{ Name() string })
-				m.DistroName = info.Name()
-				m.Screen = ScreenMenu
-				return m, nil
-			}
-			if msg.String() == "q" || msg.String() == "ctrl+c" {
-				return m, tea.Quit
-			}
+		if msg.String() == "ctrl+c" {
+			return m, tea.Quit
+		}
+		return m.handleKey(msg)
 
-		case ScreenMenu:
-			updatedMenu, cmd := m.Menu.Update(msg)
-			m.Menu = updatedMenu.(MenuModel)
-			if m.Menu.Done {
-				m.Selected = m.Menu.SelectedComponents()
-				if len(m.Selected) == 0 {
-					m.Err = fmt.Errorf("no components selected")
-					return m, tea.Quit
-				}
-				m.Screen = ScreenBackup
-				return m, nil
-			}
-			return m, cmd
+	case backupMsg:
+		if msg.err != nil {
+			m.Log = append(m.Log, "ERR backup: "+msg.err.Error())
+		} else {
+			m.Log = append(m.Log, "OK backup en "+msg.path)
+		}
+		return m.beginInstall()
 
-		case ScreenBackup:
-			switch msg.String() {
-			case "y", "Y":
-				m.Installer.RunBackup()
-				m.Screen = ScreenInstall
-				m.InstallTotal = len(m.Selected)
-				return m, m.startInstall()
-			case "n", "N":
-				m.Screen = ScreenInstall
-				m.InstallTotal = len(m.Selected)
-				return m, m.startInstall()
-			case "q", "ctrl+c":
-				return m, tea.Quit
-			}
+	case sudoMsg:
+		if msg.err != nil {
+			m.Installer.SkipPackages = true
+			m.Log = append(m.Log, "WARN sudo no disponible: solo se crearán los enlaces")
+		}
+		return m, m.installNext()
 
-		case ScreenInstall:
-			if msg.String() == "q" || msg.String() == "ctrl+c" {
-				return m, tea.Quit
+	case resultMsg:
+		r := installer.Result(msg)
+		switch {
+		case r.Err != nil:
+			m.Failures++
+			m.Log = append(m.Log, fmt.Sprintf("ERR %s: %v", r.Component.Name, r.Err))
+		case len(r.Warnings) > 0:
+			m.Warnings += len(r.Warnings)
+			m.Log = append(m.Log, "WARN "+r.Component.Name+" (enlaces OK)")
+			for _, w := range r.Warnings {
+				m.Log = append(m.Log, "     "+w)
 			}
-
-		case ScreenDone:
-			if msg.String() == "enter" || msg.String() == "q" || msg.String() == " " {
-				return m, tea.Quit
+		default:
+			m.Log = append(m.Log, "OK "+r.Component.Name)
+		}
+		for _, line := range r.Log {
+			if strings.HasPrefix(line, "  ✗") || strings.Contains(line, "errores") {
+				m.Log = append(m.Log, line)
 			}
 		}
-
-	case installMsg:
-		m.InstallStep++
-		m.InstallLog = append(m.InstallLog, fmt.Sprintf("OK %s installed", msg.Component.Name))
-		if m.InstallStep >= m.InstallTotal {
+		m.Step++
+		if m.Step >= len(m.Selected) {
 			m.Screen = ScreenDone
 			return m, nil
 		}
-		return m, m.startInstall()
-
-	case installErrMsg:
-		m.InstallLog = append(m.InstallLog, fmt.Sprintf("ERR %s: %v", msg.Component.Name, msg.Err))
-		m.InstallStep++
-		if m.InstallStep >= m.InstallTotal {
-			m.Screen = ScreenDone
-			return m, nil
-		}
-		return m, m.startInstall()
+		return m, m.installNext()
 
 	case spinner.TickMsg:
 		var cmd tea.Cmd
 		m.Spinner, cmd = m.Spinner.Update(msg)
 		return m, cmd
-
-	case progress.FrameMsg:
-		pm, cmd := m.Progress.Update(msg)
-		m.Progress = pm.(progress.Model)
-		return m, cmd
 	}
-
 	return m, nil
 }
 
+func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+	key := msg.String()
+	switch m.Screen {
+	case ScreenWelcome:
+		switch key {
+		case "enter", " ":
+			m.Screen = ScreenMenu
+		case "q", "esc":
+			return m, tea.Quit
+		}
+
+	case ScreenMenu:
+		m.Menu = m.Menu.Update(msg)
+		if m.Menu.Quit {
+			return m, tea.Quit
+		}
+		if m.Menu.Done {
+			m.Selected = m.Menu.SelectedComponents()
+			m.Missing = m.Installer.MissingPackages(m.Selected)
+			m.Screen = ScreenBackup
+		}
+
+	case ScreenBackup:
+		switch key {
+		case "y", "Y", "s", "S", "enter":
+			m.Screen = ScreenInstall
+			inst := m.Installer
+			return m, func() tea.Msg {
+				p, err := inst.RunBackup(io.Discard)
+				return backupMsg{path: p, err: err}
+			}
+		case "n", "N":
+			return m.beginInstall()
+		case "q", "esc":
+			return m, tea.Quit
+		}
+
+	case ScreenDone:
+		if key == "enter" || key == "q" || key == "esc" {
+			return m, tea.Quit
+		}
+	}
+	return m, nil
+}
+
+// beginInstall asks for the sudo password (with the real terminal) only when
+// packages are actually missing, then installs components one by one.
+func (m Model) beginInstall() (tea.Model, tea.Cmd) {
+	m.Screen = ScreenInstall
+	if len(m.Missing) > 0 && !m.Installer.DryRun && !m.Installer.SkipPackages {
+		return m, tea.ExecProcess(installer.SudoCmd(), func(err error) tea.Msg { return sudoMsg{err} })
+	}
+	return m, m.installNext()
+}
+
+func (m Model) installNext() tea.Cmd {
+	if m.Step >= len(m.Selected) {
+		return nil
+	}
+	comp := m.Selected[m.Step]
+	inst := m.Installer
+	return func() tea.Msg { return resultMsg(inst.InstallComponent(comp)) }
+}
+
 func clamp(v, lo, hi int) int {
-	if v < lo {
-		return lo
-	}
-	if v > hi {
-		return hi
-	}
-	return v
+	return max(lo, min(v, hi))
 }
 
-func max(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func (m Model) startInstall() tea.Cmd {
-	return func() tea.Msg {
-		if m.InstallStep >= len(m.Selected) {
-			return nil
-		}
-		comp := m.Selected[m.InstallStep]
-		if err := m.Installer.InstallComponent(comp); err != nil {
-			return installErrMsg{Component: comp, Err: err}
-		}
-		return installMsg{Component: comp}
-	}
-}
+// ---------------------------------------------------------------- views
 
 func (m Model) View() string {
-	if !m.Ready {
-		return "\n  Initializing..."
+	if m.Width == 0 {
+		return ""
 	}
 
 	var content string
 	switch m.Screen {
 	case ScreenWelcome:
 		content = m.welcomeView()
-	case ScreenDetect:
-		content = m.detectView()
 	case ScreenMenu:
 		content = m.menuView()
 	case ScreenBackup:
@@ -212,117 +220,121 @@ func (m Model) View() string {
 		content = m.doneView()
 	}
 
-	box := BorderStyle.
-		Width(m.Width - 4).
-		Height(m.Height - 2).
-		Render(content)
+	box := BorderStyle.Width(min(m.Width-4, 84)).Render(content)
+	return lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, box)
+}
 
-	return lipgloss.Place(
-		m.Width, m.Height,
-		lipgloss.Center, lipgloss.Center,
-		box,
-		lipgloss.WithWhitespaceBackground(DarkBg),
-	)
+func center(s string) string { return lipgloss.PlaceHorizontal(80, lipgloss.Center, s) }
+
+func (m Model) platform() string {
+	name := m.Installer.Distro.Name()
+	if m.Installer.Omarchy {
+		name += "  " + OmarchyStyle.Render("● Omarchy detectado")
+	}
+	return name
 }
 
 func (m Model) welcomeView() string {
-	s := BannerStyle.Render(logoAscii()) + "\n\n"
-	s += GhostStyle.Render(pacmanGhostArt()) + "\n\n"
-	s += TitleStyle.Align(lipgloss.Center).Render("PACMAN INSTALLER v1.0") + "\n\n"
-	s += DimStyle.Align(lipgloss.Center).Render("Press ENTER to start  ·  Press q to quit")
-	return s
-}
-
-func (m Model) detectView() string {
-	s := TitleStyle.Align(lipgloss.Center).Render("Detecting System") + "\n\n"
-	s += lipgloss.NewStyle().Align(lipgloss.Center).Render(
-		m.Spinner.View() + " Detecting Linux distribution...",
-	)
-	return s
+	lines := []string{
+		GhostStyle.Render(assets.Ghost),
+		"",
+		BannerStyle.Render(assets.Logo),
+		"",
+		TitleStyle.Render("dotfiles installer " + m.Version),
+		SubtitleStyle.Render(m.platform()),
+		DimStyle.Render("repo: " + m.Installer.DotfilesDir),
+	}
+	if m.Installer.DryRun {
+		lines = append(lines, WarnStyle.Render("modo --dry-run: no se modificará nada"))
+	}
+	lines = append(lines, "", HelpStyle.Render("enter empezar · q salir"))
+	return lipgloss.JoinVertical(lipgloss.Center, lines...)
 }
 
 func (m Model) menuView() string {
-	s := TitleStyle.Align(lipgloss.Center).Render("Select Components") + "\n"
-	s += SubtitleStyle.Align(lipgloss.Center).Render("Distro: "+m.DistroName) + "\n\n"
-	s += m.Menu.View()
-	return s
+	head := lipgloss.JoinVertical(lipgloss.Center,
+		TitleStyle.Render("Componentes"),
+		SubtitleStyle.Render(m.platform()),
+	)
+	return center(head) + "\n\n" + m.Menu.View()
 }
 
 func (m Model) backupView() string {
-	s := TitleStyle.Align(lipgloss.Center).Render("Backup") + "\n\n"
-	s += lipgloss.NewStyle().Align(lipgloss.Center).Render(
-		"Create backup of existing configs before installing?\n\n",
-	)
-	s += lipgloss.NewStyle().Align(lipgloss.Center).Render(
-		SelectedStyle.Render("[Y] Yes") + "  " +
-			DimStyle.Render("[N] No  [Q] Quit"),
-	)
-	return s
+	var b strings.Builder
+	b.WriteString(TitleStyle.Render("Resumen") + "\n\n")
+	for _, c := range m.Selected {
+		b.WriteString("  " + SuccessStyle.Render("●") + " " + c.Name + DimStyle.Render(fmt.Sprintf("  (%d enlaces)", len(c.Links))) + "\n")
+	}
+	b.WriteString("\n")
+	if len(m.Missing) > 0 {
+		b.WriteString(WarnStyle.Render("Paquetes a instalar (se pedirá sudo): ") + strings.Join(m.Missing, " ") + "\n")
+	} else {
+		b.WriteString(DimStyle.Render("Todos los paquetes ya están instalados.") + "\n")
+	}
+	b.WriteString(DimStyle.Render("Los archivos existentes se renombran a *.bak.<fecha> antes de enlazar.") + "\n\n")
+	b.WriteString(SelectedStyle.Render("¿Crear backup completo en ~/.dotfiles-backup?") + "  [S/n]  " + HelpStyle.Render("q salir"))
+	return b.String()
+}
+
+func (m Model) logView(limit int) string {
+	lines := m.Log
+	if len(lines) > limit {
+		lines = lines[len(lines)-limit:]
+	}
+	var b strings.Builder
+	for _, line := range lines {
+		switch {
+		case strings.HasPrefix(line, "OK"):
+			b.WriteString(SuccessStyle.Render("✓ " + strings.TrimPrefix(line, "OK ")))
+		case strings.HasPrefix(line, "WARN"):
+			b.WriteString(WarnStyle.Render("! " + strings.TrimPrefix(line, "WARN ")))
+		case strings.HasPrefix(line, "ERR"):
+			b.WriteString(ErrorStyle.Render("✗ " + strings.TrimPrefix(line, "ERR ")))
+		default:
+			b.WriteString(DimStyle.Render(line))
+		}
+		b.WriteString("\n")
+	}
+	return b.String()
 }
 
 func (m Model) installView() string {
-	s := TitleStyle.Align(lipgloss.Center).Render("Installing") + "\n\n"
-
-	bar := m.Progress.ViewAs(float64(m.InstallStep) / float64(max(m.InstallTotal, 1)))
-	s += lipgloss.NewStyle().Align(lipgloss.Center).Render(bar) + "\n\n"
-
-	for _, log := range m.InstallLog {
-		if strings.HasPrefix(log, "OK") {
-			s += SuccessStyle.Render(log) + "\n"
-		} else {
-			s += ErrorStyle.Render(log) + "\n"
-		}
+	total := max(len(m.Selected), 1)
+	s := TitleStyle.Render("Instalando") + "\n\n"
+	s += m.Progress.ViewAs(float64(m.Step)/float64(total)) + DimStyle.Render(fmt.Sprintf("  %d/%d", m.Step, total)) + "\n\n"
+	s += m.logView(max(m.Height-14, 5))
+	if m.Step < len(m.Selected) {
+		s += "\n" + m.Spinner.View() + " " + m.Selected[m.Step].Name + "..."
 	}
-
-	if m.InstallStep < m.InstallTotal {
-		comp := m.Selected[m.InstallStep]
-		s += "\n" + lipgloss.NewStyle().Align(lipgloss.Center).Render(
-			m.Spinner.View()+" Installing "+comp.Name+"...",
-		)
-	}
-
 	return s
 }
 
 func (m Model) doneView() string {
-	s := TitleStyle.Align(lipgloss.Center).Render("Installation Complete") + "\n\n"
+	title := SuccessStyle.Render("¡Listo!")
+	if m.Failures > 0 {
+		title = ErrorStyle.Render(fmt.Sprintf("Terminado con %d error(es)", m.Failures))
+	} else if m.Warnings > 0 {
+		title = WarnStyle.Render(fmt.Sprintf("Terminado con %d aviso(s)", m.Warnings))
+	}
+	s := title + "\n\n" + m.logView(max(m.Height-16, 5)) + "\n"
 
-	for _, log := range m.InstallLog {
-		if strings.HasPrefix(log, "OK") {
-			s += SuccessStyle.Render(log) + "\n"
-		} else {
-			s += ErrorStyle.Render(log) + "\n"
+	var next []string
+	for _, c := range m.Selected {
+		switch c.ID {
+		case "omarchy":
+			next = append(next,
+				"omarchy theme set wallhaven-gjr6ke   # aplicar un tema PACMAN",
+				"fastfetch                            # ver el nuevo logo",
+				"omarchy restart terminal             # recargar terminales")
+		case "zsh":
+			next = append(next, "exec zsh                             # recargar la shell")
 		}
 	}
-
-	if m.Err != nil {
-		s += "\n" + ErrorStyle.Render("Error: "+m.Err.Error()) + "\n"
+	if len(next) > 0 {
+		s += TitleStyle.Render("Siguientes pasos") + "\n"
+		for _, n := range next {
+			s += "  " + CodeStyle.Render(n) + "\n"
+		}
 	}
-
-	s += "\n" + DimStyle.Align(lipgloss.Center).Render("Press ENTER to exit")
-	return s
-}
-
-func logoAscii() string {
-	return `██████╗  █████╗  ██████╗███╗   ███╗ █████╗ ███╗   ██╗
-██╔══██╗██╔══██╗██╔════╝████╗ ████║██╔══██╗████╗  ██║
-██████╔╝███████║██║     ██╔████╔██║███████║██╔██╗ ██║
-██╔═══╝ ██╔══██║██║     ██║╚██╔╝██║██╔══██║██║╚██╗██║
-██║     ██║  ██║╚██████╗██║ ╚═╝ ██║██║  ██║██║ ╚████║
-╚═╝     ╚═╝  ╚═╝ ╚═════╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝`
-}
-
-func pacmanGhostArt() string {
-	return `         .--.
-        /    \
-       / /-_-\ \
-      / | (") | \
-     /  \  \_/  / \
-    /   |       |  \
-   /    |       |   \
-  /     |       |    \
- /______|_______|_____\
-  |     |       |     |
-  |     |       |     |
-  |_____|_______|_____|`
+	return s + "\n" + HelpStyle.Render("enter salir")
 }
