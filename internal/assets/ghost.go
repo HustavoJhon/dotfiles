@@ -1,5 +1,5 @@
 // Package assets holds the ASCII art shared by the installer and branding.
-// The ghost matches omarchy/branding/about.txt.
+// Ghost is a compact version of omarchy/branding/about.txt.
 package assets
 
 const Ghost = `          ████████
