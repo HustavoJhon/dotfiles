@@ -89,7 +89,7 @@ go build -ldflags "-s -w -X main.version=$version" -o bin/installer ./cmd/instal
 info "Abriendo instalador"
 # Con `curl | bash` stdin es el script: conecta la TUI a la terminal real.
 # shellcheck disable=SC2086
-if [[ -t 0 ]]; then
+if [[ -t 0 ]] || ! { : </dev/tty; } 2>/dev/null; then
     exec ./bin/installer ${PACMAN_ARGS:-}
 else
     exec ./bin/installer ${PACMAN_ARGS:-} </dev/tty
