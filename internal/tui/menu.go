@@ -1,8 +1,10 @@
 package tui
 
 import (
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+
 	"github.com/hustavojhon/dotfiles/internal/installer"
 )
 
@@ -11,84 +13,76 @@ type MenuModel struct {
 	Selected   map[string]bool
 	Cursor     int
 	Done       bool
+	Quit       bool
 }
 
 func NewMenuModel(components []installer.Component) MenuModel {
 	selected := make(map[string]bool)
 	for _, c := range components {
-		selected[c.ID] = true
+		selected[c.ID] = c.Default
 	}
-	return MenuModel{
-		Components: components,
-		Selected:   selected,
-	}
+	return MenuModel{Components: components, Selected: selected}
 }
 
-func (m MenuModel) Init() tea.Cmd { return nil }
-
-func (m MenuModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.String() {
-		case "up", "k":
-			if m.Cursor > 0 {
-				m.Cursor--
-			}
-		case "down", "j":
-			if m.Cursor < len(m.Components)-1 {
-				m.Cursor++
-			}
-		case " ":
-			id := m.Components[m.Cursor].ID
-			m.Selected[id] = !m.Selected[id]
-		case "enter":
-			m.Done = true
-			return m, nil
-		case "q", "ctrl+c":
-			m.Done = true
-			return m, tea.Quit
+func (m MenuModel) Update(msg tea.KeyMsg) MenuModel {
+	switch msg.String() {
+	case "up", "k":
+		if m.Cursor > 0 {
+			m.Cursor--
 		}
+	case "down", "j":
+		if m.Cursor < len(m.Components)-1 {
+			m.Cursor++
+		}
+	case " ", "x":
+		id := m.Components[m.Cursor].ID
+		m.Selected[id] = !m.Selected[id]
+	case "a":
+		for _, c := range m.Components {
+			m.Selected[c.ID] = true
+		}
+	case "n":
+		for _, c := range m.Components {
+			m.Selected[c.ID] = false
+		}
+	case "enter":
+		if len(m.SelectedComponents()) > 0 {
+			m.Done = true
+		}
+	case "q", "esc", "ctrl+c":
+		m.Quit = true
 	}
-	return m, nil
+	return m
 }
 
 func (m MenuModel) SelectedComponents() []installer.Component {
-	var components []installer.Component
+	var out []installer.Component
 	for _, c := range m.Components {
 		if m.Selected[c.ID] {
-			components = append(components, c)
+			out = append(out, c)
 		}
 	}
-	return components
+	return out
 }
 
 func (m MenuModel) View() string {
-	help := HeaderStyle.Render("↑/↓ navigate  ·  Space toggle  ·  Enter confirm  ·  q quit")
-	lines := []string{help, ""}
-
-	for i, comp := range m.Components {
+	var b strings.Builder
+	for i, c := range m.Components {
+		check := DimStyle.Render("○")
+		if m.Selected[c.ID] {
+			check = SuccessStyle.Render("●")
+		}
+		name := ItemStyle.Render(c.Name)
 		cursor := "  "
 		if i == m.Cursor {
-			cursor = "❯ "
+			cursor = SelectedStyle.Render("❯ ")
+			name = SelectedStyle.Render(c.Name)
 		}
-
-		checked := "[ ]"
-		if m.Selected[comp.ID] {
-			checked = "[✓]"
-		}
-
-		line := cursor + checked + " " + comp.Name
-
+		b.WriteString(cursor + check + " " + name + "\n")
 		if i == m.Cursor {
-			lines = append(lines, SelectedStyle.Render(line))
-			lines = append(lines, DimStyle.Render("   "+comp.Description))
-		} else {
-			lines = append(lines, ItemStyle.Render(checked+" "+comp.Name))
+			b.WriteString("      " + DimStyle.Render(c.Description) + "\n")
 		}
 	}
-
-	content := lipgloss.JoinVertical(lipgloss.Center, lines...)
-	return lipgloss.NewStyle().
-		Align(lipgloss.Center).
-		Render(content)
+	b.WriteString("\n" + HelpStyle.Render("↑/↓ mover · espacio marcar · a todo · n nada · enter continuar · q salir"))
+	return b.String()
 }
