@@ -19,10 +19,11 @@ internal/          ← Go packages
 ├── tui/           ← Bubble Tea screens
 ├── backup/        ← Timestamped backup system
 ├── symlink/       ← Symlink management layer
-├── config/        ← JSON config loader
 └── assets/        ← Pacman Ghost ASCII art
 
-configs/           ← All dotfiles organized by tool
+shell/ term/ wm/   ← Dotfiles organized by tool
+editor/ prompt/
+omarchy/           ← Omarchy overrides (Hyprland Lua, shell, themes, branding)
 scripts/           ← Shell + Python automation
 shaders/           ← Optional GLSL effects
 assets/            ← Logos, banners, wallpapers, fonts
@@ -33,11 +34,10 @@ docs/              ← Documentation
 
 ```go
 type DistroAdapter interface {
-    InstallPackage(pkg string) error
-    InstallPackages(pkgs []string) error
-    RemovePackage(pkg string) error
-    UpdateSystem() error
+    Name() string
     PackageManager() string
+    IsInstalled(pkg string) bool
+    InstallPackage(pkg string) error // sudo -n: credentials cached beforehand
 }
 ```
 
@@ -45,16 +45,17 @@ Each distro family implements this interface:
 
 | Adapter | Package Manager | Distros |
 |---|---|---|
-| ArchAdapter | pacman | Arch, CachyOS, EndeavourOS |
+| ArchAdapter | pacman (+AUR) | Arch, Omarchy, CachyOS, EndeavourOS, Manjaro |
 | DebianAdapter | apt | Debian, Ubuntu, Pop, Mint, Kali |
 | FedoraAdapter | dnf | Fedora, RHEL |
 
-Detection reads `/etc/os-release` at runtime.
+Detection reads `/etc/os-release` at runtime. `DistroInfo.IsOmarchy()` switches
+the component set (see [OMARCHY.md](OMARCHY.md)).
 
 ## TUI Flow
 
 ```
-Welcome → Distro Detect → Component Select → Backup Prompt → Install → Done
+Welcome → Component Select → Summary/Backup → sudo -v (only if packages missing) → Install → Done
 ```
 
 ## Symlink Management
@@ -62,8 +63,20 @@ Welcome → Distro Detect → Component Select → Backup Prompt → Install →
 Files are NEVER copied. The symlink manager creates `ln -sf` relationships:
 
 ```
-~/dotfiles/configs/zsh/.zshrc → ~/.zshrc
-~/dotfiles/configs/kitty/     → ~/.config/kitty
+dotfiles/shell/.zshrc         → ~/.zshrc
+dotfiles/omarchy/hypr/*.lua   → ~/.config/hypr/*.lua
 ```
 
-Pre-existing files get a `.bak` timestamp suffix before symlink creation.
+Pre-existing files are renamed to `<file>.bak.<timestamp>`. Re-running is
+idempotent. Nothing is printed to stdout while the TUI runs: output goes to an
+`io.Writer` and is shown inside the TUI.
+
+## CLI
+
+```
+installer               TUI
+installer --list        components for this system
+installer --status      link state
+installer --install omarchy,zsh [--dry-run] [--no-packages] [--no-backup]
+installer --backup-only
+```
