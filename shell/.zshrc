@@ -50,17 +50,17 @@ fi
 # ---------------------------------------------
 #           ZSH PLUGINS (HOMEBREW)
 # ---------------------------------------------
-[ -f ""$(dirname "$BREW_BIN")"/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ] && \
-    source ""$(dirname "$BREW_BIN")"/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+[ -f "${BREW_BIN:h}/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ] && \
+    source "${BREW_BIN:h}/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
-[ -f ""$(dirname "$BREW_BIN")"/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
-    source ""$(dirname "$BREW_BIN")"/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[ -f "${BREW_BIN:h}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ] && \
+    source "${BREW_BIN:h}/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
-[ -f ""$(dirname "$BREW_BIN")"/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
-    source ""$(dirname "$BREW_BIN")"/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f "${BREW_BIN:h}/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ] && \
+    source "${BREW_BIN:h}/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-[ -f ""$(dirname "$BREW_BIN")"/share/powerlevel10k/powerlevel10k.zsh-theme" ] && \
-    source ""$(dirname "$BREW_BIN")"/share/powerlevel10k/powerlevel10k.zsh-theme"
+[ -f "${BREW_BIN:h}/share/powerlevel10k/powerlevel10k.zsh-theme" ] && \
+    source "${BREW_BIN:h}/share/powerlevel10k/powerlevel10k.zsh-theme"
 
 # ---------------------------------------------
 #      LOAD MODULAR CONFIGS FROM .DOTFILES
@@ -75,7 +75,7 @@ DOTFILES_ZSH="$HOME/.dotfiles/zsh"
 # ---------------------------------------------
 #           EXTERNAL TOOLS INIT
 # ---------------------------------------------
-command -v starship &> /dev/null && [[ ! -f "$(dirname $BREW_BIN)/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && eval "$(starship init zsh)"
+command -v starship &> /dev/null && [[ ! -f "${BREW_BIN:h}/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && eval "$(starship init zsh)"
 command -v carapace &> /dev/null && source <(carapace _carapace)
 command -v fzf &> /dev/null && eval "$(fzf --zsh)"
 command -v zoxide &> /dev/null && eval "$(zoxide init zsh)"
