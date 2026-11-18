@@ -274,7 +274,7 @@ func (m Model) backupView() string {
 	} else {
 		b.WriteString(DimStyle.Render("Todos los paquetes ya están instalados.") + "\n")
 	}
-	b.WriteString(DimStyle.Render("Los archivos existentes se renombran a *.bak.<fecha> antes de enlazar.") + "\n\n")
+	b.WriteString(DimStyle.Render("Los archivos existentes se mueven a ~/.dotfiles-backup/links/ antes de enlazar.") + "\n\n")
 	b.WriteString(SelectedStyle.Render("¿Crear backup completo en ~/.dotfiles-backup?") + "  [S/n]  " + HelpStyle.Render("q salir"))
 	return b.String()
 }

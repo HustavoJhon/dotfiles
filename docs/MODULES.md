@@ -27,7 +27,7 @@ disponibles en el sistema actual.
 
 ## Backups
 
-- Cada archivo existente se renombra a `<archivo>.bak.<AAAAMMDD-HHMMSS>` antes de enlazar.
+- Cada archivo existente se mueve a `~/.dotfiles-backup/links/<AAAAMMDD-HHMMSS>/` (misma ruta relativa) antes de enlazar.
 - Backup completo opcional en `~/.dotfiles-backup/<AAAAMMDD_HHMMSS>/`
   (lista en `internal/backup/backup.go`).
 

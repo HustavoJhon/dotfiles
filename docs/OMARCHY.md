@@ -84,5 +84,5 @@ omarchy refresh hyprland   # restaura ~/.config/hypr (hace backup)
 omarchy refresh shell
 ```
 
-Los archivos que había antes de enlazar quedan como `*.bak.<fecha>` y el
+Los archivos que había antes de enlazar quedan en `~/.dotfiles-backup/links/<fecha>/` y el
 backup completo en `~/.dotfiles-backup/<fecha>/`.

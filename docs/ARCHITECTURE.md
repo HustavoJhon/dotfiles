@@ -67,7 +67,7 @@ dotfiles/shell/.zshrc         → ~/.zshrc
 dotfiles/omarchy/hypr/*.lua   → ~/.config/hypr/*.lua
 ```
 
-Pre-existing files are renamed to `<file>.bak.<timestamp>`. Re-running is
+Pre-existing files are moved to `~/.dotfiles-backup/links/<timestamp>/`. Re-running is
 idempotent. Nothing is printed to stdout while the TUI runs: output goes to an
 `io.Writer` and is shown inside the TUI.
 

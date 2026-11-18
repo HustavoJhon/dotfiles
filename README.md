@@ -101,7 +101,7 @@ bin/installer --install all --dry-run        # ver qué haría
 ## Cómo funciona
 
 - **Symlinks**, nunca copias: editar en el repo = editar la config viva.
-- Si ya existe un archivo, se renombra a `*.bak.<fecha>` antes de enlazar. Reinstalar es idempotente.
+- Si ya existe un archivo, se mueve a `~/.dotfiles-backup/links/<fecha>/` antes de enlazar. Reinstalar es idempotente.
 - Paquetes uno por uno: si uno no existe en tu distro es un aviso, no un error.
   Si el binario ya está en el `PATH` (Homebrew, mise…) no se reinstala.
 - `sudo` se pide una sola vez y solo si falta algún paquete.
