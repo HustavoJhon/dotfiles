@@ -14,12 +14,14 @@
 - [x] GLSL shaders
 - [x] Makefile build system
 - [x] Professional README
+- [x] Omarchy support (Lua Hyprland, shell, themes, PACMAN branding)
+- [x] Non-interactive CLI (`--install`, `--status`, `--dry-run`)
 
 ## v1.1
 - [ ] Installer themes (light/dark mode toggle in TUI)
 - [ ] Configuration profiles (dev, gaming, minimal)
 - [ ] Remote install via SSH
-- [ ] Docker-based testing
+- [x] Docker-based testing (`make e2e`)
 - [ ] Windows WSL2 support
 
 ## v1.2
