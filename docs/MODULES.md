@@ -1,35 +1,38 @@
-# PACMAN Modules
+# Módulos de PACMAN
 
-## Available Components
+Definidos en `internal/installer/modules.go`. `make list` muestra los
+disponibles en el sistema actual.
 
-| Component | Packages | Config | AUR |
-|---|---|---|---|
-| ZSH | zsh, fzf, zoxide | configs/zsh/ | — |
-| Zellij | zellij | configs/zellij/ | zellij |
-| Kitty | kitty | configs/kitty/ | — |
-| WezTerm | wezterm | configs/wezterm/ | wezterm |
-| Ghostty | — | configs/ghostty/ | ghostty |
-| Fastfetch | fastfetch | configs/fastfetch/ | — |
-| Starship | starship | configs/starship/ | — |
-| Hyprland | hyprland, hyprlock, hypridle, waybar, wofi, dunst | configs/hypr/ | hyprland |
-| Tmux | tmux | configs/tmux/ | — |
-| Neovim | neovim | configs/nvim/ | — |
+| ID | Paquetes | Origen → destino | Plataforma | Por defecto |
+|---|---|---|---|---|
+| omarchy | — | `omarchy/*` → `~/.config/{hypr,omarchy,kitty,ghostty,fastfetch}` | solo Omarchy | ✓ |
+| zsh | zsh fzf zoxide fd bat eza | `shell/*` → `~/.zshrc`, `~/.dotfiles/zsh/` | todas | ✓ |
+| zellij | zellij | `wm/zellij` → `~/.config/zellij` | todas | ✓ |
+| tmux | tmux | `wm/tmux/.tmux.conf` → `~/.config/tmux/tmux.conf` | todas | ✓ |
+| starship | starship | `prompt/starship.toml` → `~/.config/starship.toml` | todas | |
+| kitty | kitty | `term/kitty` → `~/.config/kitty` | no Omarchy | ✓ |
+| ghostty | ghostty | `term/ghostty/config` → `~/.config/ghostty/config` | no Omarchy | |
+| wezterm | wezterm | `term/wezterm/.wezterm.lua` → `~/.wezterm.lua` | todas | |
+| fastfetch | fastfetch | `term/fastfetch` → `~/.config/fastfetch` | no Omarchy | ✓ |
+| hyprland | hyprland hyprlock hypridle waybar wofi dunst | `wm/hypr` → `~/.config/hypr` | no Omarchy | |
+| nvim | neovim | `editor/nvim` → `~/.config/nvim` | todas | |
 
-## Python Scripts
+## Paquetes
 
-| Script | Purpose |
-|---|---|
-| update_fonts.py | Install Nerd Fonts from assets/ |
-| wallpaper_manager.py | Set/rotate wallpapers |
-| theme_switcher.py | Switch between Tokyo Night, Catppuccin, Nord |
-| package_audit.py | Check installed vs desired packages |
+- Se instalan uno a uno; si uno no existe en la distro es un **aviso**, no un error.
+- Un paquete cuenta como instalado si el gestor lo conoce **o** su binario ya
+  está en el `PATH` (Homebrew, mise, …).
+- En Arch/Omarchy se intenta el repo oficial y luego el AUR (yay/paru).
+- `sudo` se pide una sola vez, con la terminal real, y solo si falta algo.
 
-## Backup System
+## Backups
 
-Backups are stored at `~/.dotfiles-backup/YYYYMMDD_HHMMSS/`
+- Cada archivo existente se renombra a `<archivo>.bak.<AAAAMMDD-HHMMSS>` antes de enlazar.
+- Backup completo opcional en `~/.dotfiles-backup/<AAAAMMDD_HHMMSS>/`
+  (lista en `internal/backup/backup.go`).
 
-Backed up paths:
-- `~/.zshrc`, `~/.zshenv`, `~/.p10k.zsh`
-- `~/.config/kitty`, `~/.config/nvim`
-- `~/.tmux.conf`, `~/.gitconfig`
-- `~/.local/share/zsh`
+## Añadir un módulo
+
+1. Pon la config en su carpeta (`term/`, `wm/`, …).
+2. Añade un `Component` en `modules.go` con sus `Links`.
+3. `make test`: comprueba que las rutas existen y que ningún destino se repite.
